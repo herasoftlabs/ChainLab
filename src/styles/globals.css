@@ -1,0 +1,197 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import '@solana/wallet-adapter-react-ui/styles.css';
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 3.9%;
+    --primary: 0 0% 9%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 0 0% 96.1%;
+    --secondary-foreground: 0 0% 9%;
+    --muted: 0 0% 96.1%;
+    --muted-foreground: 0 0% 45.1%;
+    --accent: 0 0% 96.1%;
+    --accent-foreground: 0 0% 9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 89.8%;
+    --input: 0 0% 89.8%;
+    --ring: 0 0% 3.9%;
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 0 0% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 0 0% 9%;
+    --secondary: 0 0% 14.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 14.9%;
+    --muted-foreground: 0 0% 63.9%;
+    --accent: 0 0% 14.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
+    --ring: 0 0% 83.1%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-sans;
+  }
+}
+
+.editor-board {
+  position: relative;
+  z-index: 1;
+}
+
+/* Solana Wallet Modal Styles */
+@layer components {
+  .wallet-adapter-button {
+    @apply inline-flex items-center justify-center bg-primary text-white hover:bg-primary/90 px-4 py-2 rounded-md transition-colors;
+  }
+
+  .wallet-adapter-button-trigger {
+    @apply bg-primary text-white hover:bg-primary/90 transition-colors;
+  }
+
+  .wallet-adapter-button:disabled {
+    @apply opacity-50 cursor-not-allowed;
+  }
+
+  .wallet-adapter-button-start-icon {
+    @apply mr-2;
+  }
+
+  .wallet-adapter-modal-wrapper {
+    @apply fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm;
+  }
+
+  .wallet-adapter-modal-container {
+    @apply bg-background rounded-lg shadow-xl max-w-md w-full mx-4;
+  }
+
+  .wallet-adapter-modal-title {
+    @apply text-lg font-semibold text-foreground p-6 border-b border-border;
+  }
+
+  .wallet-adapter-modal-content {
+    @apply p-6;
+  }
+
+  .wallet-adapter-modal-list {
+    @apply space-y-2;
+  }
+
+  .wallet-adapter-modal-list-item {
+    @apply flex items-center p-3 rounded-md hover:bg-accent transition-colors cursor-pointer;
+  }
+
+  .wallet-adapter-modal-list-item-icon {
+    @apply w-8 h-8 mr-3;
+  }
+
+  .wallet-adapter-modal-list-item-name {
+    @apply text-foreground font-medium;
+  }
+
+  .wallet-adapter-modal-button-close {
+    @apply absolute top-4 right-4 p-2 rounded-md hover:bg-accent transition-colors;
+  }
+
+  .wallet-adapter-dropdown {
+    @apply relative inline-block;
+  }
+
+  .wallet-adapter-dropdown-list {
+    @apply absolute right-0 mt-2 w-48 bg-background border border-border rounded-md shadow-lg z-10;
+  }
+
+  .wallet-adapter-dropdown-list-item {
+    @apply block w-full text-left px-4 py-2 text-sm text-foreground hover:bg-accent hover:text-accent-foreground transition-colors;
+  }
+
+  /* Modal Overlay */
+  .wallet-adapter-modal-overlay {
+    @apply fixed inset-0 bg-black/50 backdrop-blur-sm z-40;
+  }
+
+  /* Connection Status */
+  .wallet-adapter-button-connected {
+    @apply bg-green-600 hover:bg-green-700;
+  }
+
+  .wallet-adapter-button-disconnected {
+    @apply bg-primary hover:bg-primary/90;
+  }
+
+  /* Loading State */
+  .wallet-adapter-button-loading {
+    @apply relative opacity-80 cursor-wait;
+  }
+
+  .wallet-adapter-button-loading::after {
+    content: '';
+    @apply absolute inset-0 bg-white/20 animate-pulse rounded-md;
+  }
+
+  /* Error State */
+  .wallet-adapter-button-error {
+    @apply bg-destructive text-destructive-foreground hover:bg-destructive/90;
+  }
+
+  /* Mobile Responsiveness */
+  @media (max-width: 640px) {
+    .wallet-adapter-modal-container {
+      @apply mx-4 max-w-full;
+    }
+
+    .wallet-adapter-modal-title {
+      @apply text-base p-4;
+    }
+
+    .wallet-adapter-modal-content {
+      @apply p-4;
+    }
+
+    .wallet-adapter-button {
+      @apply text-sm px-3 py-1.5;
+    }
+  }
+}
