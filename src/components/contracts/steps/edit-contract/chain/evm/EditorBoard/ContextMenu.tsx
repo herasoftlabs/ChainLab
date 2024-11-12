@@ -19,8 +19,8 @@ interface Props {
 export const ComponentContextMenu: React.FC<Props> = ({ component, children }) => {
   const {
     removeComponent,
-    addComponentRelation,
-    removeComponentRelation
+    /* addComponentRelation,
+    removeComponentRelation */
   } = useComponentStore();
 
   return (
