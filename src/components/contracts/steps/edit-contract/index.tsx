@@ -17,7 +17,7 @@ import { Toolbar } from '@/components/contracts/steps/edit-contract/chain/evm/Ed
 import { UndoRedoProvider } from '@/components/contracts/steps/edit-contract/chain/evm/EditorBoard/UndoRedoProvider';
 import { toast } from 'react-toastify';
 import { contractToComponents } from '@/utils/chains/evm/contractToComponents';
-import { DraggableComponent} from '@/types/evm/contractTypes';
+import { DraggableComponent, ComponentCategoryMain} from '@/types/evm/contractTypes';
 import { ComponentInstance } from '@/components/contracts/steps/edit-contract/chain/evm/EditorBoard/ComponentInstance';
 import { createComponentData } from '@/utils/chains/evm/componentFactory';
 /* import { generateSolidityCode } from '@/utils/chain-specific//componentsToSolidity'; */
@@ -98,12 +98,12 @@ const EditContract: React.FC = () => {
     console.group('🎯 Drag Start');
     console.log('⚡ Active Element:', active);
     console.log('📦 Active Data:', active.data.current);
-
+    
     // Dragging a new template
     if (active.data.current?.type === 'new-template') {
       const dragData = active.data.current as DragData;
       console.log('🆕 New Template Drag:', dragData);
-
+      
       const componentData: DraggedItemType = {
         id: nanoid(),
         type: dragData.payload.componentType,
@@ -113,10 +113,7 @@ const EditContract: React.FC = () => {
           parameters: [],
           returnParameters: [],
           modifiers: [],
-          category: dragData.payload.category || {
-            main: 'Functions',
-            sub: 'WriteFunctions'
-          },
+          category: dragData.payload.category || 'Functions', 
           stateMutability: dragData.payload.stateMutability,
           dataType: dragData.payload.dataType,
           body: { content: '' },
@@ -128,16 +125,15 @@ const EditContract: React.FC = () => {
         height: 100,
         documentation: ''
       };
-
+      
       setDraggedComponent(componentData);
       console.log('✨ Created Template Data:', componentData);
     }
-
     // Dragging an existing component
     else if (active.data.current?.component) {
       const draggedComponent = active.data.current.component;
       console.log('🔄 Dragged Component:', draggedComponent);
-
+      
       const componentData: DraggedItemType = {
         id: draggedComponent.id || nanoid(),
         type: draggedComponent.type,
@@ -148,14 +144,13 @@ const EditContract: React.FC = () => {
         height: 100,
         documentation: ''
       };
-
+      
       setDraggedComponent(componentData);
       console.log('✨ Created Component Data:', componentData);
     }
-
+    
     // Reset pointer position
     pointerPositionRef.current = { x: 0, y: 0 };
-
     console.groupEnd();
   };
   
@@ -710,14 +705,7 @@ const EditContract: React.FC = () => {
             id: draggedComponent.id,
             type: 'function',
             name: `New Function`,
-            category: draggedComponent.data.category || {
-              main: 'Functions',
-              sub:
-                draggedComponent.data.stateMutability === 'view' ||
-                draggedComponent.data.stateMutability === 'pure'
-                  ? 'ReadFunctions'
-                  : 'WriteFunctions',
-            },
+            category: 'Functions',
             visibility: 'public',
             stateMutability:
               draggedComponent.data.stateMutability || 'nonpayable',
@@ -737,10 +725,7 @@ const EditContract: React.FC = () => {
             id: draggedComponent.id,
             type: 'variable',
             name: `New Variable`,
-            category: {
-              main: 'BasicComponents',
-              sub: 'StateVariables',
-            },
+            category: 'StateVariables',
             dataType: draggedComponent.data.dataType || 'uint256',
             visibility: 'public',
             mutability: 'mutable',
@@ -757,10 +742,7 @@ const EditContract: React.FC = () => {
             id: draggedComponent.id,
             type: 'constructor',
             name: 'Constructor',
-            category: {
-              main: 'BasicComponents',
-              sub: 'Constructor',
-            },
+            category: 'BasicComponents',
             parameters: [],
             modifiers: [],
             body: { content: '' },
@@ -776,10 +758,7 @@ const EditContract: React.FC = () => {
             id: draggedComponent.id,
             type: 'event',
             name: `New Event`,
-            category: {
-              main: 'Events',
-              sub: 'CustomEvents',
-            },
+            category: 'BasicComponents',
             parameters: [],
             defaultValues: {},
           },
@@ -793,10 +772,7 @@ const EditContract: React.FC = () => {
             id: draggedComponent.id,
             type: 'modifier',
             name: `New Modifier`,
-            category: {
-              main: 'BasicComponents',
-              sub: 'Modifiers',
-            },
+            category: 'BasicComponents',
             parameters: [],
             body: { content: '' },
             defaultValues: {},
@@ -811,10 +787,7 @@ const EditContract: React.FC = () => {
             id: draggedComponent.id,
             type: 'error',
             name: `New Error`,
-            category: {
-              main: 'BasicComponents',
-              sub: 'CustomErrors',
-            },
+            category: 'BasicComponents',
             parameters: [],
             defaultValues: {},
           },
@@ -828,10 +801,7 @@ const EditContract: React.FC = () => {
             id: draggedComponent.id,
             type: 'struct',
             name: `New Struct`,
-            category: {
-              main: 'DataStructures',
-              sub: 'Struct',
-            },
+            category: 'DataStructures',
             members: [],
             defaultValues: {},
           },
@@ -845,10 +815,7 @@ const EditContract: React.FC = () => {
             id: draggedComponent.id,
             type: 'enum',
             name: `New Enum`,
-            category: {
-              main: 'DataStructures',
-              sub: 'Enum',
-            },
+            category: 'DataStructures',
             members: [],
             defaultValues: {},
           },
@@ -862,10 +829,7 @@ const EditContract: React.FC = () => {
             id: draggedComponent.id,
             type: 'mapping',
             name: `New Mapping`,
-            category: {
-              main: 'DataStructures',
-              sub: 'Mapping',
-            },
+            category: 'DataStructures',
             keyType: 'uint256', 
             valueType: 'uint256', 
             visibility: 'public',
@@ -881,10 +845,7 @@ const EditContract: React.FC = () => {
             id: draggedComponent.id,
             type: 'array',
             name: `New Array`,
-            category: {
-              main: 'DataStructures',
-              sub: 'Array',
-            },
+            category: 'DataStructures',
             dataType: 'uint256', 
             length: undefined, 
             visibility: 'public',
@@ -900,10 +861,7 @@ const EditContract: React.FC = () => {
             id: draggedComponent.id,
             type: 'integration',
             name: `New Integration`,
-            category: {
-              main: 'Integrations',
-              sub: 'TokenStandards',
-            },
+            category: 'OracleIntegrations',
             standard: 'Custom',
             features: [],
             defaultValues: {},
@@ -918,10 +876,7 @@ const EditContract: React.FC = () => {
             id: draggedComponent.id,
             type: 'security',
             name: `New Security Feature`,
-            category: {
-              main: 'Security',
-              sub: 'AccessControl',
-            },
+            category: 'BasicComponents',
             featureType: 'ownable',
             implementation: '',
             requirements: [],
@@ -937,10 +892,7 @@ const EditContract: React.FC = () => {
             id: draggedComponent.id,
             type: 'oracle',
             name: `New Oracle Integration`,
-            category: {
-              main: 'Integrations',
-              sub: 'OracleIntegration',
-            },
+            category: 'OracleIntegrations',
             provider: 'chainlink',
             endpoint: '',
             parameters: [],
@@ -956,10 +908,7 @@ const EditContract: React.FC = () => {
             id: draggedComponent.id,
             type: 'externalCall',
             name: `New External Call`,
-            category: {
-              main: 'Integrations',
-              sub: 'ExternalCalls',
-            },
+            category: 'OracleIntegrations',
             target: '',
             method: '',
             parameters: [],
