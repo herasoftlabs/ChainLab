@@ -1,31 +1,40 @@
-// pages/contracts/[id]/page.tsx
+// src/app/contracts/[id]/page.tsx
 'use client';
-
-import React, { useEffect } from 'react';
-import { useParams } from 'next/navigation';
-import { useProjectStore } from '@/stores/useProjectStore';
+import React, { Suspense, useEffect } from 'react';
 import ContractSteps from '@/components/contracts';
+import { useProjectStore } from '@/stores/useProjectStore';
 
-const ContractPage = () => {
-  const params = useParams();
+// Ana sayfa komponenti
+export default function ContractPage({
+  params,
+}: {
+  params: { id: string }
+}) {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ContractContent contractId={params.id} />
+    </Suspense>
+  );
+}
+
+// İç komponent
+function ContractContent({ contractId }: { contractId: string }) {
   const currentProject = useProjectStore((state) => state.currentProject);
   const currentContract = useProjectStore((state) => state.currentContract);
   const setCurrentContract = useProjectStore((state) => state.setCurrentContract);
 
   useEffect(() => {
-    if (currentProject && params.id) {
-      const contract = currentProject.contracts?.find(c => c.id === params.id);
+    if (currentProject && contractId) {
+      const contract = currentProject.contracts?.find(c => c.id === contractId);
       if (contract) {
         setCurrentContract(contract);
       }
     }
-  }, [currentProject, params.id, setCurrentContract]);
+  }, [currentProject, contractId, setCurrentContract]);
 
   if (!currentContract) {
     return <div>Contract not found!</div>;
   }
 
   return <ContractSteps />;
-};
-
-export default ContractPage;
+}
