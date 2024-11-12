@@ -9,7 +9,7 @@ import { Card } from "@/components/ui/card";
 import { ArrowRight, Code2, Layers, Zap, MonitorSmartphone, Palette, Users, Shield, DollarSign } from "lucide-react";
 import Link from 'next/link';
 import Image from 'next/image';
-
+import { Analytics } from "@vercel/analytics/react"
 export default function LandingPage() {
   
 
