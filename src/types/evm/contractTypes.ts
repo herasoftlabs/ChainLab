@@ -75,44 +75,16 @@ export type DataType = BasicDataType | ComplexDataType;
 // -------------------------
 // 4. Component Category and Types
 // -------------------------
-export interface ComponentCategory {
-  main: ComponentCategoryMain;
-  sub?: SubCategoryType;
-}
+
+
 export type ComponentCategoryMain =
+  | 'StateVariables'
   | 'BasicComponents'
   | 'Functions'
-  | 'Events'
   | 'DataStructures'
-  | 'Security'
-  | 'Integrations';
+  | 'OracleIntegrations';
 
-  export type SubCategoryType =
-  | 'StateVariables'
-  | 'Constructor'
-  | 'Modifiers'
-  | 'CustomErrors'
-
-  | 'ReadFunctions'
-  | 'WriteFunctions'
-
-  | 'TransferEvents'
-  | 'StatusEvents'
-  | 'CustomEvents'
-
-  | 'Struct'
-  | 'Enum'
-  | 'Mapping'
-  | 'Array'
-  
-  | 'AccessControl'
-  | 'Pausable'
-  | 'Guards'
-
-  | 'TokenStandards'
-  | 'OracleIntegration'
-  | 'ExternalCalls'
-
+ 
 
 
   export type ComponentType =
@@ -154,7 +126,7 @@ export interface ComponentDataFields {
   type: ComponentType;
   name: string;
   documentation?: string;
-  category: ComponentCategory;
+  category: ComponentCategoryMain;
   defaultValues?: Record<string, any>;
   body?: BodyContent;
 }
@@ -189,10 +161,7 @@ export type DraggedItemType = {
   type: ComponentType;
   data: {
     type: ComponentType;
-    category?: {
-      main: ComponentCategoryMain;
-      sub: SubCategoryType;
-    };
+    category?: ComponentCategoryMain;
     stateMutability?: Mutability;
     dataType?: DataType;
     [key: string]: any;
@@ -209,10 +178,7 @@ export interface DragData {
   payload: {
     id?: string;
     componentType: ComponentType;
-    category?: {
-      main: ComponentCategoryMain;
-      sub: SubCategoryType;
-    };
+    category?: ComponentCategoryMain;
     stateMutability?: Mutability;
     dataType?: DataType;
   };

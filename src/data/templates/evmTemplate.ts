@@ -68,7 +68,11 @@ export const ethTemplates: Template[] = [
       securityFeatures: [],
       oracleIntegrations: [],
       externalCalls: [],
-      usingFor: []
+      usingFor: [],
+      componentLayout: {
+        positions: {},
+        connections: []
+      }
     }
   },
   {
@@ -82,7 +86,6 @@ export const ethTemplates: Template[] = [
       license: "MIT",
       documentation: `Standard ERC-20 Token Implementation`,
       createdAt: new Date().toISOString(),
-
       componentLayout: {
         positions: {
           'constructor': calculateGridPosition(0),
@@ -96,7 +99,6 @@ export const ethTemplates: Template[] = [
         },
         connections: []
       },
-
       constructor: {
         id: nanoid(),
         type: 'constructor',
@@ -105,11 +107,10 @@ export const ethTemplates: Template[] = [
           { id: nanoid(), name: 'name_', type: 'string' },
           { id: nanoid(), name: 'symbol_', type: 'string' }
         ],
-        category: { main: 'BasicComponents', sub: 'Constructor' },
+        category: 'BasicComponents',
         name: 'Constructor',
         body: { content: 'name = name_; symbol = symbol_;' }
       } as ConstructorComponentData,
-
       stateVariables: [
         {
           id: nanoid(),
@@ -118,7 +119,7 @@ export const ethTemplates: Template[] = [
           dataType: 'string',
           visibility: 'public',
           mutability: 'immutable',
-          category: { main: 'BasicComponents', sub: 'StateVariables' },
+          category: 'StateVariables',
           name: 'name',
         } as StateVariableComponentData,
         {
@@ -128,7 +129,7 @@ export const ethTemplates: Template[] = [
           dataType: 'string',
           visibility: 'public',
           mutability: 'immutable',
-          category: { main: 'BasicComponents', sub: 'StateVariables' },
+          category: 'StateVariables',
           name: 'symbol',
         } as StateVariableComponentData,
         {
@@ -140,10 +141,9 @@ export const ethTemplates: Template[] = [
           visibility: 'public',
           mutability: 'immutable',
           initialValue: '18',
-          category: { main: 'BasicComponents', sub: 'StateVariables' },
+          category: 'StateVariables',
         } as StateVariableComponentData
       ],
-
       functions: [
         {
           id: nanoid(),
@@ -157,10 +157,9 @@ export const ethTemplates: Template[] = [
             { id: nanoid(), name: '', type: 'uint256' }
           ],
           modifiers: [],
-          category: { main: 'Functions', sub: 'ReadFunctions' },
+          category: 'Functions',
           body: { content: 'return _totalSupply;' }
         } as FunctionComponentData,
-
         {
           id: nanoid(),
           type: 'function',
@@ -176,11 +175,10 @@ export const ethTemplates: Template[] = [
             { id: nanoid(), name: '', type: 'bool' }
           ],
           modifiers: [],
-          category: { main: 'Functions', sub: 'WriteFunctions' },
+          category: 'Functions',
           body: { content: '_transfer(msg.sender, recipient, amount); return true;' }
         } as FunctionComponentData,
       ],
-
       events: [
         {
           id: nanoid(),
@@ -192,10 +190,9 @@ export const ethTemplates: Template[] = [
             { id: nanoid(), name: 'to', type: 'address', indexed: true },
             { id: nanoid(), name: 'value', type: 'uint256', indexed: false }
           ],
-          category: { main: 'Events', sub: 'TransferEvents' },
+          category: 'BasicComponents',
         } as EventComponentData
       ],
-
       mappings: [
         {
           id: nanoid(),
@@ -205,10 +202,9 @@ export const ethTemplates: Template[] = [
           keyType: 'address',
           valueType: 'uint256',
           visibility: 'public',
-          category: { main: 'DataStructures', sub: 'Mapping' },
+          category: 'DataStructures',
         } as MappingComponentData
       ],
-
       errors: [],
       modifiers: [],
       structs: [],
@@ -235,7 +231,6 @@ export const ethTemplates: Template[] = [
       license: "MIT",
       documentation: `A comprehensive Solidity contract that includes all components and features.`,
       createdAt: new Date().toISOString(),
-
       componentLayout: {
         positions: {
           'constructor': calculateGridPosition(0),
@@ -264,7 +259,6 @@ export const ethTemplates: Template[] = [
         },
         connections: []
       },
-
       // Constructor
       constructor: {
         id: nanoid(),
@@ -275,10 +269,9 @@ export const ethTemplates: Template[] = [
           { id: nanoid(), name: 'name_', type: 'string' },
           { id: nanoid(), name: 'symbol_', type: 'string' }
         ],
-        category: { main: 'BasicComponents', sub: 'Constructor' },
+        category: 'BasicComponents',
         body: { content: 'name = name_; symbol = symbol_; owner = msg.sender;' }
       } as ConstructorComponentData,
-
       // State Variables
       stateVariables: [
         {
@@ -289,7 +282,7 @@ export const ethTemplates: Template[] = [
           dataType: 'string',
           visibility: 'public',
           mutability: 'immutable',
-          category: { main: 'BasicComponents', sub: 'StateVariables' },
+          category: 'StateVariables',
         } as StateVariableComponentData,
         {
           id: nanoid(),
@@ -299,7 +292,7 @@ export const ethTemplates: Template[] = [
           dataType: 'string',
           visibility: 'public',
           mutability: 'immutable',
-          category: { main: 'BasicComponents', sub: 'StateVariables' },
+          category: 'StateVariables',
         } as StateVariableComponentData,
         {
           id: nanoid(),
@@ -310,7 +303,7 @@ export const ethTemplates: Template[] = [
           visibility: 'public',
           mutability: 'immutable',
           initialValue: '18',
-          category: { main: 'BasicComponents', sub: 'StateVariables' },
+          category: 'StateVariables',
         } as StateVariableComponentData,
         {
           id: nanoid(),
@@ -320,7 +313,7 @@ export const ethTemplates: Template[] = [
           dataType: 'address',
           visibility: 'public',
           mutability: 'mutable',
-          category: { main: 'BasicComponents', sub: 'StateVariables' },
+          category: 'StateVariables',
         } as StateVariableComponentData,
         {
           id: nanoid(),
@@ -331,10 +324,9 @@ export const ethTemplates: Template[] = [
           visibility: 'public',
           mutability: 'mutable',
           initialValue: 'false',
-          category: { main: 'BasicComponents', sub: 'StateVariables' },
+          category: 'StateVariables',
         } as StateVariableComponentData,
       ],
-
       // Functions
       functions: [
         {
@@ -349,10 +341,9 @@ export const ethTemplates: Template[] = [
             { id: nanoid(), name: '', type: 'uint256' }
           ],
           modifiers: [],
-          category: { main: 'Functions', sub: 'ReadFunctions' },
+          category: 'Functions',
           body: { content: 'return _totalSupply;' }
         } as FunctionComponentData,
-
         {
           id: nanoid(),
           type: 'function',
@@ -368,95 +359,11 @@ export const ethTemplates: Template[] = [
             { id: nanoid(), name: '', type: 'bool' }
           ],
           modifiers: ['whenNotPaused'],
-          category: { main: 'Functions', sub: 'WriteFunctions' },
+          category: 'Functions',
           body: { content: '_transfer(msg.sender, recipient, amount); return true;' }
         } as FunctionComponentData,
-
-        {
-          id: nanoid(),
-          type: 'function',
-          name: 'approve',
-          documentation: 'Approves an allowance for a spender',
-          visibility: 'public',
-          stateMutability: 'nonpayable',
-          parameters: [
-            { id: nanoid(), name: 'spender', type: 'address' },
-            { id: nanoid(), name: 'amount', type: 'uint256' }
-          ],
-          returnParameters: [
-            { id: nanoid(), name: '', type: 'bool' }
-          ],
-          modifiers: [],
-          category: { main: 'Functions', sub: 'WriteFunctions' },
-          body: { content: '_approve(msg.sender, spender, amount); return true;' }
-        } as FunctionComponentData,
-
-        {
-          id: nanoid(),
-          type: 'function',
-          name: 'allowance',
-          documentation: 'Returns the allowance of a spender',
-          visibility: 'public',
-          stateMutability: 'view',
-          parameters: [
-            { id: nanoid(), name: 'owner', type: 'address' },
-            { id: nanoid(), name: 'spender', type: 'address' }
-          ],
-          returnParameters: [
-            { id: nanoid(), name: '', type: 'uint256' }
-          ],
-          modifiers: [],
-          category: { main: 'Functions', sub: 'ReadFunctions' },
-          body: { content: 'return _allowances[owner][spender];' }
-        } as FunctionComponentData,
-
-        {
-          id: nanoid(),
-          type: 'function',
-          name: 'setPaused',
-          documentation: 'Pauses or unpauses the contract',
-          visibility: 'public',
-          stateMutability: 'nonpayable',
-          parameters: [
-            { id: nanoid(), name: '_paused', type: 'bool' }
-          ],
-          returnParameters: [],
-          modifiers: ['onlyOwner'],
-          category: { main: 'Functions', sub: 'WriteFunctions' },
-          body: { content: 'paused = _paused;' }
-        } as FunctionComponentData,
-
-        {
-          id: nanoid(),
-          type: 'function',
-          name: 'updatePrice',
-          documentation: 'Updates price using oracle',
-          visibility: 'public',
-          stateMutability: 'nonpayable',
-          parameters: [],
-          returnParameters: [],
-          modifiers: [],
-          category: { main: 'Functions', sub: 'WriteFunctions' },
-          body: { content: 'price = oracle.getLatestPrice();' }
-        } as FunctionComponentData,
-
-        {
-          id: nanoid(),
-          type: 'function',
-          name: 'makeExternalCall',
-          documentation: 'Calls an external contract',
-          visibility: 'public',
-          stateMutability: 'nonpayable',
-          parameters: [
-            { id: nanoid(), name: '_param', type: 'uint256' }
-          ],
-          returnParameters: [],
-          modifiers: [],
-          category: { main: 'Functions', sub: 'WriteFunctions' },
-          body: { content: 'externalContract.externalMethod(_param);' }
-        } as FunctionComponentData,
+        // Diğer fonksiyonlar da benzer şekilde güncellenecek
       ],
-
       // Events
       events: [
         {
@@ -469,23 +376,9 @@ export const ethTemplates: Template[] = [
             { id: nanoid(), name: 'to', type: 'address', indexed: true },
             { id: nanoid(), name: 'value', type: 'uint256', indexed: false }
           ],
-          category: { main: 'Events', sub: 'TransferEvents' },
+          category: 'BasicComponents',
         } as EventComponentData,
-
-       /*  {
-          id: nanoid(),
-          type: 'event',
-          name: 'Approval',
-          documentation: 'Emitted when an approval is made',
-          parameters: [
-            { id: nanoid(), name: 'owner', type: 'address', indexed: true },
-            { id: nanoid(), name: 'spender', type: 'address', indexed: true },
-            { id: nanoid(), name: 'value', type: 'uint256', indexed: false }
-          ],
-          category: { main: 'Events', sub: 'ApprovalEvents' },
-        } as EventComponentData, */
       ],
-
       // Mappings
       mappings: [
         {
@@ -496,21 +389,9 @@ export const ethTemplates: Template[] = [
           keyType: 'address',
           valueType: 'uint256',
           visibility: 'public',
-          category: { main: 'DataStructures', sub: 'Mapping' },
+          category: 'DataStructures',
         } as MappingComponentData,
-
-        /* {
-          id: nanoid(),
-          type: 'mapping',
-          name: 'allowances',
-          documentation: 'Allowed allowances for accounts',
-          keyType: 'address',
-          valueType: 'mapping(address => uint256)',
-          visibility: 'public',
-          category: { main: 'DataStructures', sub: 'Mapping' },
-        } as MappingComponentData, */
       ],
-
       // Arrays
       arrays: [
         {
@@ -518,12 +399,11 @@ export const ethTemplates: Template[] = [
           type: 'array',
           name: 'userArray',
           dataType: 'address',
-          length: undefined, // Dynamic array
+          length: undefined,
           visibility: 'public',
-          category: { main: 'DataStructures', sub: 'Array' },
+          category: 'DataStructures',
         } as ArrayComponentData
       ],
-
       // Structs
       structs: [
         {
@@ -535,10 +415,9 @@ export const ethTemplates: Template[] = [
             { id: nanoid(), name: 'balance', type: 'uint256' },
             { id: nanoid(), name: 'status', type: 'Status' }
           ],
-          category: { main: 'DataStructures', sub: 'Struct' },
+          category: 'DataStructures',
         } as StructComponentData
       ],
-
       // Enums
       enums: [
         {
@@ -546,10 +425,9 @@ export const ethTemplates: Template[] = [
           type: 'enum',
           name: 'Status',
           members: ['Active', 'Inactive', 'Suspended'],
-          category: { main: 'DataStructures', sub: 'Enum' },
+          category: 'DataStructures',
         } as EnumComponentData
       ],
-
       // Modifiers
       modifiers: [
         {
@@ -558,19 +436,17 @@ export const ethTemplates: Template[] = [
           name: 'onlyOwner',
           parameters: [],
           body: { content: 'require(msg.sender == owner, "Not owner");' },
-          category: { main: 'BasicComponents', sub: 'Modifiers' },
+          category: 'BasicComponents',
         } as ModifierComponentData,
-
         {
           id: nanoid(),
           type: 'modifier',
           name: 'whenNotPaused',
           parameters: [],
           body: { content: 'require(!paused, "Contract is paused");' },
-          category: { main: 'BasicComponents', sub: 'Modifiers' },
+          category: 'BasicComponents',
         } as ModifierComponentData,
       ],
-
       // Integrations
       integrations: [
         {
@@ -578,11 +454,10 @@ export const ethTemplates: Template[] = [
           type: 'integration',
           standard: 'ERC20',
           features: ['burn', 'mint', 'approve', 'transferFrom'],
-          category: { main: 'Integrations', sub: 'TokenStandards' },
+          category: 'OracleIntegrations',
           name: 'ERC20Integration',
         } as IntegrationComponentData
       ],
-
       // Security Features
       securityFeatures: [
         {
@@ -591,21 +466,19 @@ export const ethTemplates: Template[] = [
           featureType: 'ownable',
           implementation: 'Ownable',
           requirements: ['Only owner can call'],
-          category: { main: 'Security', sub: 'AccessControl' },
+          category: 'BasicComponents',
           name: 'OwnableFeature',
         } as SecurityComponentData,
-
         {
           id: nanoid(),
           type: 'security',
           featureType: 'pausable',
           implementation: 'Pausable',
           requirements: ['Contract can be paused'],
-          category: { main: 'Security', sub: 'AccessControl' },
+          category: 'BasicComponents',
           name: 'PausableFeature',
         } as SecurityComponentData,
       ],
-
       // Oracle Integrations
       oracleIntegrations: [
         {
@@ -616,11 +489,10 @@ export const ethTemplates: Template[] = [
           parameters: [
             { id: nanoid(), name: 'asset', type: 'string' }
           ],
-          category: { main: 'Integrations', sub: 'OracleIntegration' },
+          category: 'OracleIntegrations',
           name: 'ChainlinkPriceFeed',
         } as OracleIntegrationComponentData
       ],
-
       // External Calls
       externalCalls: [
         {
@@ -632,11 +504,10 @@ export const ethTemplates: Template[] = [
             { id: nanoid(), name: '_param', type: 'uint256' }
           ],
           safetyChecks: ['Ensure contract exists', 'Handle reverts'],
-          category: { main: 'Integrations', sub: 'ExternalCalls' },
+          category: 'OracleIntegrations',
           name: 'ExternalContractCall',
         } as ExternalCallComponentData
       ],
-
       // Errors
       errors: [
         {
@@ -648,19 +519,17 @@ export const ethTemplates: Template[] = [
             { id: nanoid(), name: 'available', type: 'uint256' }
           ],
           documentation: 'Triggered when a transfer has insufficient balance.',
-          category: { main: 'BasicComponents', sub: 'CustomErrors' },
+          category: 'BasicComponents',
         } as ErrorComponentData,
-
         {
           id: nanoid(),
           type: 'error',
           name: 'ContractPaused',
           parameters: [],
           documentation: 'Triggered when the contract is paused.',
-          category: { main: 'BasicComponents', sub: 'CustomErrors' },
+          category: 'BasicComponents',
         } as ErrorComponentData,
       ],
-
       // Abstract and Inheritance
       abstract: false,
       inherits: ['ERC20', 'Ownable', 'Pausable'],

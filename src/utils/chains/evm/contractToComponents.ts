@@ -1,17 +1,14 @@
-// src/utils/chains/evm/contractToComponents.ts
-
 import { nanoid } from 'nanoid';
 import {
   EthereumContract,
   DraggableComponent,
-  SubCategoryType,
 } from '@/types/evm/contractTypes';
 import { createComponentData } from '@/utils/chains/evm/componentFactory'; 
 
 export const contractToComponents = (contract: EthereumContract): Record<string, DraggableComponent> => {
   const components: Record<string, DraggableComponent> = {};
   let componentIndex = 0;
-
+  
   const calculatePosition = (name: string, index: number) => {
     if (contract.componentLayout?.positions?.[name]) {
       return contract.componentLayout.positions[name];
@@ -22,6 +19,31 @@ export const contractToComponents = (contract: EthereumContract): Record<string,
     };
   };
 
+  /* const getCategoryForComponent = (type: string): string => {
+    switch (type) {
+      case 'constructor':
+      case 'variable':
+      case 'modifier':
+      case 'error':
+        return 'BasicComponents';
+      case 'function':
+        return 'Functions';
+      case 'event':
+        return 'BasicComponents';
+      case 'struct':
+      case 'enum':
+      case 'mapping':
+      case 'array':
+        return 'DataStructures';
+      case 'integration':
+      case 'oracle':
+      case 'externalCall':
+        return 'OracleIntegrations';
+      default:
+        return 'BasicComponents';
+    }
+  }; */
+
   // Constructor
   if (contract.constructor && contract.constructor.id) {
     components[contract.constructor.id] = {
@@ -29,7 +51,7 @@ export const contractToComponents = (contract: EthereumContract): Record<string,
       type: 'constructor',
       data: {
         ...contract.constructor,
-        category: { main: 'BasicComponents', sub: 'Constructor' },
+        category: 'BasicComponents',
         name: 'Constructor',
       },
       position: calculatePosition('constructor', 0),
@@ -46,8 +68,9 @@ export const contractToComponents = (contract: EthereumContract): Record<string,
       type: 'variable',
       data: {
         ...variable,
-        category: { main: 'BasicComponents', sub: 'StateVariables' },
+        category: 'StateVariables',
         name: variable.name,
+        dataType: variable.dataType,
       },
       position: calculatePosition(variable.name, componentIndex++),
       connections: [],
@@ -58,19 +81,12 @@ export const contractToComponents = (contract: EthereumContract): Record<string,
 
   // Functions
   contract.functions.forEach((func) => {
-    const subCategory: SubCategoryType = func.category?.sub || (
-      func.stateMutability === 'view' || func.stateMutability === 'pure' ? 'ReadFunctions' : 'WriteFunctions'
-    );
-
     components[func.id] = {
       id: func.id,
       type: 'function',
       data: {
         ...func,
-        category: {
-          main: 'Functions',
-          sub: subCategory,
-        },
+        category: 'Functions',
         name: func.name,
       },
       position: calculatePosition(func.name, componentIndex++),
@@ -87,7 +103,7 @@ export const contractToComponents = (contract: EthereumContract): Record<string,
       type: 'event',
       data: {
         ...event,
-        category: { main: 'Events', sub: 'CustomEvents' },
+        category: 'BasicComponents',
         name: event.name,
       },
       position: calculatePosition(event.name, componentIndex++),
@@ -104,7 +120,7 @@ export const contractToComponents = (contract: EthereumContract): Record<string,
       type: 'modifier',
       data: {
         ...modifier,
-        category: { main: 'BasicComponents', sub: 'Modifiers' },
+        category: 'BasicComponents',
         name: modifier.name,
       },
       position: calculatePosition(modifier.name, componentIndex++),
@@ -121,7 +137,7 @@ export const contractToComponents = (contract: EthereumContract): Record<string,
       type: 'struct',
       data: {
         ...struct,
-        category: { main: 'DataStructures', sub: 'Struct' },
+        category: 'DataStructures',
         name: struct.name,
       },
       position: calculatePosition(struct.name, componentIndex++),
@@ -138,7 +154,7 @@ export const contractToComponents = (contract: EthereumContract): Record<string,
       type: 'enum',
       data: {
         ...enumType,
-        category: { main: 'DataStructures', sub: 'Enum' },
+        category: 'DataStructures',
         name: enumType.name,
       },
       position: calculatePosition(enumType.name, componentIndex++),
@@ -155,7 +171,7 @@ export const contractToComponents = (contract: EthereumContract): Record<string,
       type: 'mapping',
       data: {
         ...mapping,
-        category: { main: 'DataStructures', sub: 'Mapping' },
+        category: 'DataStructures',
         name: mapping.name,
       },
       position: calculatePosition(mapping.name, componentIndex++),
@@ -172,7 +188,7 @@ export const contractToComponents = (contract: EthereumContract): Record<string,
       type: 'array',
       data: {
         ...array,
-        category: { main: 'DataStructures', sub: 'Array' },
+        category: 'DataStructures',
         name: array.name,
       },
       position: calculatePosition(array.name, componentIndex++),
@@ -189,7 +205,7 @@ export const contractToComponents = (contract: EthereumContract): Record<string,
       type: 'error',
       data: {
         ...error,
-        category: { main: 'BasicComponents', sub: 'CustomErrors' },
+        category: 'BasicComponents',
         name: error.name,
       },
       position: calculatePosition(error.name, componentIndex++),

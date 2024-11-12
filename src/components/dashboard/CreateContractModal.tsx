@@ -72,6 +72,11 @@ const CreateContractModal: React.FC<CreateContractModalProps> = ({
       oracleIntegrations: [],
       externalCalls: [],
       usingFor: [],
+      
+      componentLayout: {
+        positions: {},
+        connections: []
+      }
     };
 
     // Contract bileşenlerini ComponentStore'a aktar

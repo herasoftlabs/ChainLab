@@ -1,10 +1,7 @@
-// components/contracts/steps/edit-contract/chain/evm/ComponentPalette/ComponentItem.tsx
-
 import React from 'react';
 import {
   ComponentType,
   ComponentCategoryMain,
-  SubCategoryType,
   Mutability,
 } from '@/types/evm/contractTypes';
 import { Icons } from '@/components/ui/icons';
@@ -19,7 +16,6 @@ interface Props {
   name: string;
   description: string;
   category: ComponentCategoryMain;
-  subcategory: SubCategoryType;
   icon: keyof typeof Icons;
   dataType?: string;
   stateMutability?: Mutability;
@@ -31,7 +27,6 @@ export const ComponentItem: React.FC<Props> = ({
   name,
   description,
   category,
-  subcategory,
   icon,
   dataType,
   stateMutability,
@@ -107,7 +102,6 @@ export const ComponentItem: React.FC<Props> = ({
       id={id}
       type={type}
       category={category}
-      subcategory={subcategory}
       stateMutability={stateMutability}
     >
       <div
@@ -115,7 +109,7 @@ export const ComponentItem: React.FC<Props> = ({
           'm-1 p-3 bg-white rounded-lg border',
           borderColor,
           hoverBgColor,
-          'transition-colors duration-200 cursor-pointer',
+          'transition-colors duration-200 cursor-move',
         )}
       >
         <div className="flex items-center gap-3">

@@ -9,7 +9,7 @@ interface CategoryHeaderProps {
 
 export const CategoryHeader: React.FC<CategoryHeaderProps> = ({ title, icon }) => {
   return (
-    <div className="flex items-center gap-2 py-1">
+    <div className="flex items-center gap-2 py-3">
       <CategoryIcon icon={icon} />
       <span className='no-underline'>{title}</span>
     </div>
