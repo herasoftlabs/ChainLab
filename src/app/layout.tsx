@@ -25,7 +25,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <div className="flex h-screen">
           <div className="flex flex-col w-full">
             <RootProvider>
-              <main className="">{children}</main>
+              <main className="">
+                {children} 
+                <Analytics />
+              </main>
             </RootProvider>
           </div>
         </div>
