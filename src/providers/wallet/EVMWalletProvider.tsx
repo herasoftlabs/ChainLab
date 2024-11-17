@@ -3,7 +3,7 @@
 'use client';
 import { WagmiProvider, createConfig, http } from 'wagmi';
 import { ConnectKitProvider } from 'connectkit';
-import { mainnet, sepolia } from 'wagmi/chains';
+import { mainnet, sepolia,taiko,taikoHekla,holesky } from 'wagmi/chains';
 import { injected, metaMask } from 'wagmi/connectors';
 import { useCurrentProject } from '@/stores/useProjectStore';
 import { findChainByIdAndKey } from '@/utils/constants';
@@ -19,6 +19,9 @@ export const EVMWalletProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     transports: {
       [mainnet.id]: http(),
       [sepolia.id]: http(),
+      [taiko.id]: http(),
+      [taikoHekla.id]: http(),
+      [holesky.id]: http(),
     },
     connectors: [
       injected(),

@@ -11,7 +11,7 @@ export const CHAIN_ICONS = {
   educhain: '/icons/chains/educhain.png',
   taikomainnet: '/icons/chains/taiko-mainnet.webp',
   taikohekla: '/icons/chains/taiko-hekla.png',
-  ethereumhekla: '/icons/chains/holesky-logo.png',
+  ethereumholesky: '/icons/chains/holesky-logo.png',
   default: '/icons/chains/defaultchain.png'
 } as const;
 
@@ -277,7 +277,7 @@ export const CHAINS: Record<string, Chain> = {
     id: '17000',
     key: 'ETHEREUM_HOLESKY',
     name: 'Etheruem Holesky',
-    icon: CHAIN_ICONS.taikohekla,
+    icon: CHAIN_ICONS.ethereumholesky,
     platform: 'EVM',
     testnet: true,
     nativeCurrency: {
