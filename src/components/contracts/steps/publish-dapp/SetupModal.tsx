@@ -134,17 +134,17 @@ export const SetupModal: React.FC<SetupModalProps> = ({
                   <div className="space-y-4">
                     <SetupStep
                       icon={<Globe className="w-4 h-4" />}
-                      title="Domain Hazırlığı"
+                      title="Domain Preparation"
                       isDone={progress >= 25}
                     />
                     <SetupStep
                       icon={<Code className="w-4 h-4" />}
-                      title="Şablon Konfigürasyonu"
+                      title="Template Configuration"
                       isDone={progress >= 50}
                     />
                     <SetupStep
                       icon={<Database className="w-4 h-4" />}
-                      title="Contract Entegrasyonu"
+                      title="Contract Integration"
                       isDone={progress >= 75}
                     />
                     <SetupStep
