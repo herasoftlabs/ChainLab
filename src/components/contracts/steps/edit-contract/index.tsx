@@ -27,6 +27,7 @@ const EditContract: React.FC = () => {
   const currentProject = useProjectStore((state) => state.currentProject);
   const currentContract = useProjectStore((state) => state.currentContract);
   const resetUnsavedChanges = useComponentStore((state) => state.resetUnsavedChanges);
+  const removeComponent = useComponentStore((state) => state.removeComponent);
   const hasUnsavedChanges = useComponentStore((state) => state.hasUnsavedChanges);
 
   const {
@@ -43,12 +44,14 @@ const EditContract: React.FC = () => {
   /* const { writeFile } = useWebContainerStore(); */
 
   // Local state
-  const [zoom, setZoom] = useState(1);                                    
+  const zoom = useComponentStore((state) => state.zoom); 
+  const setZoom = useComponentStore((state) => state.setZoom); 
+
   const [showGrid, setShowGrid] = useState(true);                       
   const [isConnecting, setIsConnecting] = useState(false);              
   const [connectionStart, setConnectionStart] = useState<string | null>(null); 
   const updateContract = useProjectStore((state) => state.updateContract);
-
+  const [expandedComponentId, setExpandedComponentId] = useState<string | null>(null);
   const pointerPositionRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
 
   const sensors = useSensors(
@@ -60,11 +63,10 @@ const EditContract: React.FC = () => {
     })
   );
 
-  // Convert components when the contract changes
+ 
   useEffect(() => {
     if (currentContract) {
       const convertedComponents = contractToComponents(currentContract);
-      // Convert record to array
       const componentsArray = Object.values(convertedComponents);
       importComponents(componentsArray);
 
@@ -92,6 +94,10 @@ const EditContract: React.FC = () => {
     };
   }, [hasUnsavedChanges]);
   
+
+  const handleDelete = (componentId: string) => {
+    removeComponent(componentId);
+  };
 
   const handleDragStart = (event: DragStartEvent) => {
     const { active } = event;
@@ -155,7 +161,6 @@ const EditContract: React.FC = () => {
   };
   
 
-  // Handle drag end
   const handleDragEnd = (event: DragEndEvent) => {
 
     console.group('🎯 Drag End');
@@ -163,7 +168,6 @@ const EditContract: React.FC = () => {
     console.log('⚡ Active Element:', active);
     console.log('🎯 Over Element:', over);
 
-    // If there's no valid drop target, cancel the operation
     if (!over || over.id !== 'editor-board') {
       console.log('❌ Invalid drop target');
       setDraggedComponent(null);
@@ -193,230 +197,6 @@ const EditContract: React.FC = () => {
 
       if (dragData.type === 'new-template') {
         const componentId = nanoid();
-
-       
-
-        /* const createComponentData = (
-          componentId: string,
-          componentType: ComponentType,
-          dragData: DragData
-        ): DraggableComponentData => {
-          
-          const baseData: ComponentDataFields = {
-            id: componentId,
-            type: componentType,
-            name: `New ${componentType}`,
-            documentation: '',
-            category: {
-              main: 'BasicComponents',
-              sub: 'StateVariables',
-            },
-            defaultValues: {},
-            body: { content: '' },
-          };
-
-          switch (componentType) {
-            case 'function': {
-              const functionData: FunctionComponentData = {
-                ...baseData,
-                type: 'function',
-                category: {
-                  main: 'Functions',
-                  sub:
-                    dragData.payload.stateMutability === 'view' ||
-                    dragData.payload.stateMutability === 'pure'
-                      ? 'ReadFunctions'
-                      : 'WriteFunctions',
-                },
-                visibility: 'public',
-                stateMutability: dragData.payload.stateMutability || 'nonpayable',
-                parameters: [],
-                returnParameters: [],
-                modifiers: [],
-                body: { content: '' },
-              };
-              return functionData;
-            }
-
-            case 'variable': {
-              const variableData: StateVariableComponentData = {
-                ...baseData,
-                type: 'variable',
-                category: {
-                  main: 'BasicComponents',
-                  sub: 'StateVariables',
-                },
-                dataType: dragData.payload.dataType || 'uint256',
-                visibility: 'public',
-                mutability: 'mutable',
-                initialValue: '',
-              };
-              return variableData;
-            }
-
-            case 'constructor': {
-              const constructorData: ConstructorComponentData = {
-                ...baseData,
-                type: 'constructor',
-                name: 'Constructor',
-                category: {
-                  main: 'BasicComponents',
-                  sub: 'Constructor',
-                },
-                parameters: [],
-                modifiers: [],
-                body: { content: '' },
-              };
-              return constructorData;
-            }
-
-            case 'event': {
-              const eventData: EventComponentData = {
-                ...baseData,
-                type: 'event',
-                category: {
-                  main: 'Events',
-                  sub: 'CustomEvents',
-                },
-                parameters: [],
-              };
-              return eventData;
-            }           
-            case 'modifier': {
-              const modifierData: ModifierComponentData = {
-                ...baseData,
-                type: 'modifier',
-                category: {
-                  main: 'BasicComponents',
-                  sub: 'Modifiers',
-                },
-                parameters: [],
-                body: { content: '' },
-              };
-              return modifierData;
-            }
-            case 'error': {
-              const errorData: ErrorComponentData = {
-                ...baseData,
-                type: 'error',
-                category: {
-                  main: 'BasicComponents',
-                  sub: 'CustomErrors',
-                },
-                parameters: [],
-              };
-              return errorData;
-            }
-            case 'struct': {
-              const structData: StructComponentData = {
-                ...baseData,
-                type: 'struct',
-                category: {
-                  main: 'DataStructures',
-                  sub: 'Struct',
-                },
-                members: [],
-              };
-              return structData;
-            }
-            case 'enum': {
-              const enumData: EnumComponentData = {
-                ...baseData,
-                type: 'enum',
-                category: {
-                  main: 'DataStructures',
-                  sub: 'Enum',
-                },
-                members: [],
-              };
-              return enumData;
-            }
-            case 'mapping': {
-              const mappingData: MappingComponentData = {
-                ...baseData,
-                type: 'mapping',
-                category: {
-                  main: 'DataStructures',
-                  sub: 'Mapping',
-                },
-                keyType: 'uint256',
-                valueType: 'uint256',
-                visibility: 'public',
-              };
-              return mappingData;
-            }
-            case 'array': {
-              const arrayData: ArrayComponentData = {
-                ...baseData,
-                type: 'array',
-                category: {
-                  main: 'DataStructures',
-                  sub: 'Array',
-                },
-                dataType: 'uint256',
-                length: undefined,
-                visibility: 'public',
-              };
-              return arrayData;
-            }
-            case 'integration': {
-              return {
-                ...baseData,
-                type: 'integration',
-                category: {
-                  main: 'Integrations',
-                  sub: 'TokenStandards',
-                },
-                standard: 'Custom',
-                features: [],
-              };
-            }
-            case 'security': {
-              return {
-                ...baseData,
-                type: 'security',
-                category: {
-                  main: 'Security',
-                  sub: 'AccessControl',
-                },
-                featureType: 'ownable',
-                implementation: '',
-                requirements: [],
-              };
-            }
-            case 'oracle': {
-              return {
-                ...baseData,
-                type: 'oracle',
-                category: {
-                  main: 'Integrations',
-                  sub: 'OracleIntegration',
-                },
-                provider: 'chainlink',
-                endpoint: '',
-                parameters: [],
-              };
-            }
-            case 'externalCall': {
-              return {
-                ...baseData,
-                type: 'externalCall',
-                category: {
-                  main: 'Integrations',
-                  sub: 'ExternalCalls',
-                },
-                target: '',
-                method: '',
-                parameters: [],
-                safetyChecks: [],
-              };
-            }
-            
-
-            default:
-              throw new Error(`Unsupported component type: ${componentType}`);
-          }
-        }; */
 
         const newComponentData = createComponentData(
           componentId,
@@ -946,12 +726,8 @@ const EditContract: React.FC = () => {
         }}
         autoScroll={true}
       >
-        {/* Main editing area */}
         <div className="h-screen flex overflow-hidden bg-gray-50">
-          {/* Left panel - Component palette */}
           <ComponentPalette />
-
-          {/* Middle panel - Editor area */}
           <div className="flex-1 flex flex-col overflow-hidden relative">
             <Toolbar
               onSave={handleSaveContract}
@@ -971,19 +747,20 @@ const EditContract: React.FC = () => {
               connectionStart={connectionStart}
               onConnectionStart={handleConnectionStart}
               onConnectionEnd={handleConnectionEnd}
+              expandedComponentId={expandedComponentId}
+              onExpand={setExpandedComponentId}
+             
             />
           </div>
-
-          {/* Right panel - Detail panel */}
           <DetailPanel
             isOpen={!!selectedComponentId}
             component={selectedComponentId ? components[selectedComponentId] : null}
             onClose={() => setSelectedComponentId(null)}
             onUpdate={updateComponent}
+            onDelete={handleDelete}
           />
         </div>
-
-        {/* Drag overlay */}
+        
         <DragOverlay>
           {draggedComponent && (
             <ComponentInstance
@@ -994,8 +771,10 @@ const EditContract: React.FC = () => {
               isSelected={false}
               isConnecting={false}
               isConnectionStart={false}
-              onClick={() => {}}
-              onConnectionStart={() => {}}
+              onClick={() => {}}  
+              expandedComponentId={expandedComponentId}
+              onExpand={setExpandedComponentId}
+
             />
           )}
         </DragOverlay>

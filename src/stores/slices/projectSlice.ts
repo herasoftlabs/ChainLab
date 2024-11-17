@@ -2,7 +2,7 @@
 
 import { StateCreator } from 'zustand';
 import { Project } from '@/types/projectTypes';
-import { EthereumContract } from '@/types/evm/contractTypes';
+import { EthereumContract, ContractInheritance } from '@/types/evm/contractTypes';
 import { Platform, Chain } from '@/types/projectTypes';
 import { SUPPORTED_PLATFORMS } from '@/utils/constants';
 
@@ -29,6 +29,12 @@ export interface ProjectSlice {
   addContractToProject: (projectId: string, contract: EthereumContract) => void;
   removeContractFromProject: (projectId: string, contractId: string) => void;
   updateContract: (projectId: string, contract: EthereumContract) => void;
+
+  updateContractInheritance: (
+    projectId: string,
+    contractId: string,
+    inheritance: ContractInheritance[]
+  ) => void;
 }
 export const createProjectSlice: StateCreator<ProjectSlice> = (set, get) => ({
   projects: [],
@@ -142,4 +148,30 @@ export const createProjectSlice: StateCreator<ProjectSlice> = (set, get) => ({
         ? updatedContract
         : state.currentContract
     })),
+
+  updateContractInheritance: (projectId, contractId, inheritance) =>
+    set((state) => {
+      const updatedProjects = state.projects.map((project) =>
+        project.id === projectId
+          ? {
+              ...project,
+              contracts: project.contracts?.map((contract) =>
+                contract.id === contractId
+                  ? { ...contract, inherits: inheritance }
+                  : contract
+              ),
+            }
+          : project
+      );
+
+      return {
+        ...state,
+        projects: updatedProjects,
+        currentContract:
+          state.currentContract?.id === contractId
+            ? { ...state.currentContract, inherits: inheritance }
+            : state.currentContract,
+      };
+    }),
+
 });

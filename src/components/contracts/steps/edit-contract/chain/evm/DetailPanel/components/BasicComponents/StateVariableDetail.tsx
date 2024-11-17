@@ -1,3 +1,4 @@
+// components/contracts/steps/edit-contract/chain/evm/DetailPanel/BasicComponents/StateVariableDetail.tsx
 import React from 'react';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';

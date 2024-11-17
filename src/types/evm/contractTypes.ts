@@ -11,7 +11,7 @@ export interface EthereumContract {
   documentation?: string;
   createdAt: string;
   abstract?: boolean;
-  inherits?: string[];
+  inherits?: ContractInheritance[];
   templateId?: string;
   templateName?: string;
   templateType?: string;
@@ -40,6 +40,59 @@ export interface EthereumContract {
 }
 
 // -------------------------
+// 1. Inheritance and Security
+// -------------------------
+
+export interface ContractInheritance {
+  id: string;
+  contractId: string;
+  contractName: string;
+  constructorParams?: FunctionParameter[];
+  accessibleComponents?: {
+    functions: string[];      
+    stateVariables: string[]; 
+    events: string[];        
+    modifiers: string[];    
+  };
+}
+
+export interface SecurityCheck {
+  id: string;
+  title: string;
+  description: string;
+  severity: 'low' | 'medium' | 'high' | 'critical';
+  category: 'inheritance' | 'access' | 'override' | 'general';
+}
+
+export interface SecurityIssue {
+  type: string;
+  message: string;
+  severity: 'low' | 'medium' | 'high' | 'critical';
+  component: string;
+  suggestion?: string;
+  code?: string;
+}
+
+export interface OverrideableFunction {
+  id: string;
+  name: string;
+  visibility: Visibility;
+  stateMutability: Mutability;
+  parameters: FunctionParameter[];
+  returnParameters: FunctionParameter[];
+  isVirtual: boolean;
+  sourceContract: string;
+  body?: BodyContent;
+}
+
+export interface OverrideImplementation {
+  functionId: string;
+  content: string;
+  superCall: boolean;
+  hasModification: boolean;
+}
+
+// -------------------------
 // 2. Basic Types (Visibility ve Mutability)
 // -------------------------
 export type Visibility = 'public' | 'private' | 'internal' | 'external';
@@ -60,17 +113,30 @@ export type BasicDataType =
 
 
 
-export interface ComplexDataType {
-  type: 'array' | 'mapping' | 'struct' | 'enum';
-  baseType: BasicDataType | ComplexDataType;
-  keyType?: BasicDataType;
-  isFixed?: boolean;
-  length?: number;
-  members?: StructMember[];
-  values?: string[];
-}
+  export type ComplexDataType =
+  | {
+      type: 'array';
+      baseType: BasicDataType | ComplexDataType;
+      isFixed?: boolean;
+      length?: number;
+    }
+  | {
+      type: 'mapping';
+      keyType: BasicDataType;
+      valueType: BasicDataType | ComplexDataType;
+    }
+  | {
+      type: 'struct';
+      members: StructMember[];
+    }
+  | {
+      type: 'enum';
+      members: string[];
+    };
 
-export type DataType = BasicDataType | ComplexDataType;
+    export type DataType = BasicDataType | ComplexDataType;
+
+    
 
 // -------------------------
 // 4. Component Category and Types
@@ -104,7 +170,7 @@ export type ComponentCategoryMain =
   | 'externalCall';
 
 
-export type DraggableComponentData =
+  export type DraggableComponentData =
   | (StateVariableComponentData & ComponentDataFields)
   | (ConstructorComponentData & ComponentDataFields)
   | (FunctionComponentData & ComponentDataFields)
@@ -129,6 +195,7 @@ export interface ComponentDataFields {
   category: ComponentCategoryMain;
   defaultValues?: Record<string, any>;
   body?: BodyContent;
+  inherits?: ContractInheritance[];
 }
 
 
@@ -212,7 +279,7 @@ export interface StateVariableComponentData extends BaseComponent, ComponentData
 export interface ConstructorComponentData extends BaseComponent, ComponentDataFields {
   type: 'constructor';
   parameters: FunctionParameter[];
-  modifiers?: string[];
+  modifiers?: Array<string | ModifierReference>;
   inheritance?: {
     baseContract: string;
     parameters: FunctionParameter[];
@@ -227,7 +294,7 @@ export interface StructComponentData extends BaseComponent, ComponentDataFields 
 export interface StructMember {
   id: string;
   name: string;
-  type: BasicDataType;
+  type: BasicDataType | string;
 }
 
 /* Enum */
@@ -242,13 +309,21 @@ export interface FunctionComponentData extends BaseComponent, ComponentDataField
   stateMutability: Mutability;
   parameters: FunctionParameter[];
   returnParameters: FunctionParameter[];
-  modifiers: string[];
+  modifiers: Array<string | ModifierReference>;
+  isVirtual?: boolean;
   body?: BodyContent; 
+  overrides?: OverrideImplementation[];
 }
+export interface ModifierReference {
+  id: string;
+  name: string;
+}
+
 export interface FunctionParameter {
   id: string;
   name: string;
   type: BasicDataType;
+  value?: string;
 }
 export interface BodyContent {
   content?: string; 

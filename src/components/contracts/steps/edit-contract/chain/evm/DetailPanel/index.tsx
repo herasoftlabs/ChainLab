@@ -1,16 +1,12 @@
-// components/contracts/steps/edit-contract/chain/evm/DetailPanel/index.tsx
 import React, { useState, useEffect } from 'react';
-import { X, Save } from 'lucide-react';
+import { X, Save, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { DraggableComponent } from '@/types/evm/contractTypes';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
-import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogFooter, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-
-// Import Component Forms
 import { ConstructorDetail } from './components/BasicComponents/ConstructorDetail';
 import { ErrorDetail } from './components/BasicComponents/ErrorDetail';
 import { ModifierDetail } from './components/BasicComponents/ModifierDetail';
@@ -21,8 +17,7 @@ import { MappingDetail } from './components/DataStructures/MappingDetail';
 import { StructDetail } from './components/DataStructures/StructDetail';
 import { EventDetail } from './components/Events/EventDetail';
 import { FunctionDetail } from './components/Functions/FunctionDetail';
-
-
+import { DocumentationPanel } from './Documentation';
 import {
   isConstructorComponentData,
   isErrorComponentData,
@@ -41,6 +36,7 @@ interface DetailPanelProps {
   component: DraggableComponent | null;
   onClose: () => void;
   onUpdate: (componentId: string, updates: Partial<DraggableComponent>) => void;
+  onDelete: (componentId: string) => void;
 }
 
 export const DetailPanel: React.FC<DetailPanelProps> = ({
@@ -48,6 +44,7 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({
   component,
   onClose,
   onUpdate,
+  onDelete,
 }) => {
   const [localComponentData, setLocalComponentData] = useState(component?.data);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
@@ -72,6 +69,12 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({
     }
   };
 
+  const handleDelete = (componentId: string) => {
+    if (!component || !localComponentData) return;
+    onDelete(componentId);
+    setHasUnsavedChanges(false);
+  };
+
   const handleChange = (updates: Partial<any>) => {
     if (!localComponentData) return;
     setLocalComponentData({
@@ -88,7 +91,6 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({
 
   const renderComponentForm = () => {
     if (!localComponentData) return null;
-
     const commonProps = {
       data: localComponentData,
       onChange: handleChange,
@@ -100,19 +102,19 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({
       case isErrorComponentData(localComponentData):
         return <ErrorDetail {...commonProps} />;
       case isModifierComponentData(localComponentData):
-          return <ModifierDetail {...commonProps} />;
+        return <ModifierDetail {...commonProps} />;
       case isStateVariableComponentData(localComponentData):
         return <StateVariableDetail {...commonProps} />;
       case isArrayComponentData(localComponentData):
-        return <ArrayDetail {...commonProps} />;   
+        return <ArrayDetail {...commonProps} />;
       case isEnumComponentData(localComponentData):
         return <EnumDetail {...commonProps} />;
       case isMappingComponentData(localComponentData):
-          return <MappingDetail {...commonProps} />;     
+        return <MappingDetail {...commonProps} />;
       case isStructComponentData(localComponentData):
         return <StructDetail {...commonProps} />;
       case isEventComponentData(localComponentData):
-          return <EventDetail {...commonProps} />;
+        return <EventDetail {...commonProps} />;
       case isFunctionComponentData(localComponentData):
         return <FunctionDetail {...commonProps} />;
       default:
@@ -125,73 +127,75 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({
   return (
     <div
       className={cn(
-        'w-96 border-l border-gray-200 bg-white',
+        'w-96 border-l border-gray-200 bg-white h-full',
         'transition-all duration-300 ease-in-out',
         isOpen ? 'translate-x-0' : 'translate-x-full',
       )}
     >
       <div className="h-full flex flex-col">
         <div className="flex items-center justify-between p-4 border-b border-gray-200">
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center gap-1 text-sm text-gray-500">
-              <p>Component Name:</p>
-              <Badge className="text-xs shadow-sm" variant="secondary">
+          <div className="flex flex-col gap-2 min-w-0 flex-1 mr-4">
+            <div className="flex items-start gap-1 text-sm text-gray-500 flex-wrap">
+              <p className="flex-shrink-0">Component Name:</p>
+              <Badge className="text-xs shadow-sm break-all" variant="secondary">
                 {localComponentData.name}
               </Badge>
             </div>
             <div className="flex items-center gap-1 text-xs text-gray-500">
-              <p>Type:</p>
+              <p className="flex-shrink-0">Type:</p>
               <Badge className="text-xs shadow-sm" variant="secondary">
                 {localComponentData.type}
               </Badge>
             </div>
           </div>
-          <Button variant="ghost" size="sm" onClick={handleClose}>
+          <Button variant="ghost" size="sm" onClick={handleClose} className="flex-shrink-0">
             <X className="h-4 w-4" />
           </Button>
         </div>
 
-        <Tabs defaultValue="properties" className="flex-1">
+        <Tabs defaultValue="properties" className="flex-1 flex flex-col">
           <TabsList className="w-full justify-start px-4 py-2 border-b">
             <TabsTrigger value="properties">
               Properties {hasUnsavedChanges && <span className="text-red-500">*</span>}
             </TabsTrigger>
+            <TabsTrigger value="code">Preview</TabsTrigger>
             <TabsTrigger value="documentation">Docs</TabsTrigger>
           </TabsList>
 
-          <ScrollArea className="flex-1">
-            <TabsContent value="properties" className="p-4 space-y-4">
+          <div className="flex-1 overflow-hidden">
+            <TabsContent value="properties" className="h-full overflow-auto p-4 space-y-4">
               {renderComponentForm()}
             </TabsContent>
-            <TabsContent value="documentation" className="p-4">
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Documentation</label>
-                  <Textarea
-                    placeholder="Add documentation here..."
-                    value={localComponentData.documentation || ''}
-                    onChange={(e) => handleChange({ documentation: e.target.value })}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Component JSON</label>
-                  <pre className="overflow-auto p-2 bg-gray-100 rounded text-xs">
-                    {JSON.stringify(localComponentData, null, 2)}
-                  </pre>
-                </div>
-              </div>
-            </TabsContent>
-          </ScrollArea>
 
-          <div className="p-4 border-t border-gray-200 flex justify-end gap-3 items-center">
+            <TabsContent value="code" className="h-full overflow-auto p-4">
+              Coming soon.
+            </TabsContent>
+
+            <TabsContent value="documentation" className="h-full overflow-auto">
+              <DocumentationPanel data={localComponentData} />
+            </TabsContent>
+          </div>
+
+          <div className="flex-none p-4 border-t border-gray-200 flex flex-col gap-3">
+            <div className="flex items-center gap-2">
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={() => handleDelete(component.id)}
+                className="flex items-center gap-2"
+              >
+                <Trash2 className="h-4 w-4" />
+                Delete Component
+              </Button>
+              <Button onClick={handleSave}>
+                <Save className="h-4 w-4 mr-2" /> Save Component
+              </Button>
+            </div>
             {hasUnsavedChanges && (
-              <span className="text-red-500 text-xs bg-red-200 p-3 rounded">
+              <div className="text-red-500 text-xs bg-red-200 p-3 rounded text-center">
                 Warning: There are unsaved changes
-              </span>
+              </div>
             )}
-            <Button onClick={handleSave}>
-              <Save className="h-4 w-4 mr-2" /> Save
-            </Button>
           </div>
         </Tabs>
       </div>

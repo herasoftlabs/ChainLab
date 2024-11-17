@@ -1,12 +1,13 @@
 // components/contracts/steps/edit-contract/chain/evm/EditorBoard/index.tsx
 
-import React from 'react';
+import React, {useState} from 'react';
 import { useDroppable } from '@dnd-kit/core';
 import { Grid } from './Grid';
 import { ComponentInstance } from './ComponentInstance';
 import { ConnectionLine } from './ConnectionLine';
 import { DraggableComponent } from '@/types/evm/contractTypes';
 import { cn } from '@/lib/utils';
+import { ComponentCategoryMain } from '@/types/evm/contractTypes';
 
 interface Props {
   components: Record<string, DraggableComponent>;  
@@ -17,8 +18,39 @@ interface Props {
   isConnecting: boolean;                          
   connectionStart: string | null;                  
   onConnectionStart: (id: string) => void;         
-  onConnectionEnd: (id: string) => void;           
+  onConnectionEnd: (id: string) => void;  
+  expandedComponentId: string | null; 
+  onExpand: (id: string | null) => void;     
 }
+
+interface CategoryConfig {
+  column: number;
+  order: number;
+}
+
+interface LayoutConfig {
+  COLUMN_WIDTH: number;
+  COMPONENT_SPACING: number;
+  CATEGORY_SPACING: number;
+  START_X: number;
+  START_Y: number;
+  CATEGORIES: Record<ComponentCategoryMain, CategoryConfig>;
+}
+
+const LAYOUT_CONFIG: LayoutConfig = {
+  COLUMN_WIDTH: 200,         
+  COMPONENT_SPACING: 0,     
+  CATEGORY_SPACING: 5,      
+  START_X: 20,
+  START_Y: 130,
+  CATEGORIES: {
+    'BasicComponents': { column: 0, order: 0 },  
+    'StateVariables': { column: 1, order: 0 },   
+    'Functions': { column: 2, order: 0 },        
+    'DataStructures': { column: 3, order: 0 },   
+    'OracleIntegrations': { column: 4, order: 0 } 
+  }
+};
 
 export const EditorBoard: React.FC<Props> = ({
   components,
@@ -30,6 +62,7 @@ export const EditorBoard: React.FC<Props> = ({
   connectionStart,
   onConnectionStart,
   onConnectionEnd,
+  
 }) => {
  
   const { setNodeRef, isOver } = useDroppable({
@@ -38,27 +71,10 @@ export const EditorBoard: React.FC<Props> = ({
       type: 'board'
     }
   });
-
   const [viewport, setViewport] = React.useState({ x: 0, y: 0 });
-  const visibleComponents = React.useMemo(() => {
-    if (!components || Object.keys(components).length === 0) {
-      return [];
-    }
+  const [expandedComponentId, setExpandedComponentId] = useState<string | null>(null);
+  const [boardSize, setBoardSize] = React.useState({ width: 0, height: 0 });
 
-    return Object.values(components).filter(component => {
-      if (!component?.position) {
-        console.warn(`Component ${component?.id} has no position`);
-        return false;
-      }
-
-      const { x = 0, y = 0 } = component.position;
-
-      return x >= viewport.x - 100 && 
-             x <= viewport.x + window.innerWidth &&
-             y >= viewport.y - 100 && 
-             y <= viewport.y + window.innerHeight;
-    });
-  }, [components, viewport]);
 
   const handleScroll = React.useCallback((e: React.UIEvent<HTMLDivElement>) => {
     const target = e.target as HTMLDivElement;
@@ -68,74 +84,180 @@ export const EditorBoard: React.FC<Props> = ({
     });
   }, []);
 
-  // Bileşenler yoksa loading veya empty state göster
-  /* if (!components || Object.keys(components).length === 0) {
-    return (
-      <div className="w-full h-full flex items-center justify-center text-gray-500">
-        No components to display
-      </div>
+  const calculateBoardDimensions = React.useCallback(() => {
+    if (!components || Object.keys(components).length === 0) {
+      return {
+        width: window.innerWidth,
+        height: window.innerHeight
+      };
+    }
+
+    const MARGIN = 100; 
+    
+    
+    const dimensions = Object.values(components).reduce(
+      (acc, component) => {
+        const rightEdge = (component.position.x + LAYOUT_CONFIG.COLUMN_WIDTH) * zoom;
+        const bottomEdge = (component.position.y + (component.height || 100)) * zoom;
+
+        return {
+          width: Math.max(acc.width, rightEdge),
+          height: Math.max(acc.height, bottomEdge)
+        };
+      },
+      { width: 0, height: 0 }
     );
-  } */
+    return {
+      width: Math.max(window.innerWidth, dimensions.width + MARGIN),
+      height: Math.max(window.innerHeight, dimensions.height + MARGIN)
+    };
+  }, [components, zoom]);
 
+  React.useEffect(() => {
+    const dimensions = calculateBoardDimensions();
+    setBoardSize(dimensions);
+  }, [components, zoom, calculateBoardDimensions]);
+  
+  const organizedComponents = React.useMemo(() => {
+    if (!components || Object.keys(components).length === 0) {
+      return [];
+    }
+  
+    const groupedComponents = Object.values(components).reduce((acc, component) => {
+      const category = component.data.category;
+      if (!acc[category]) {
+        acc[category] = [];
+      }
+      acc[category].push(component);
+      return acc;
+    }, {} as Record<ComponentCategoryMain, DraggableComponent[]>);
  
-return (
-  <div
-    id="editor-board"
-    ref={setNodeRef}
-    className={cn(
-      // Base styles
-      "w-full h-full relative overflow-auto",
-      // Conditional styles
-      isOver && "bg-blue-50 transition-colors duration-200",
-      isConnecting && "cursor-crosshair"
-    )}
-    style={{
-      transform: `scale(${zoom})`,
-      transformOrigin: '0 0',
-      minWidth: '100px',
-      minHeight: '100px',
-    }}
-    onScroll={handleScroll}
-  >
-    {/* Grid background */}
-    {showGrid && <Grid isDragging={isOver} zoom={zoom} />}
+    return Object.entries(groupedComponents).flatMap(([category, categoryComponents]) => {
+      const categoryConfig = LAYOUT_CONFIG.CATEGORIES[category as ComponentCategoryMain];
+      if (!categoryConfig) return [];
+  
+      const categoryX = LAYOUT_CONFIG.START_X + 
+                       (categoryConfig.column * (LAYOUT_CONFIG.COLUMN_WIDTH + LAYOUT_CONFIG.CATEGORY_SPACING));
+  
+      return categoryComponents.map((component, index) => {
+        if (component.position.x !== 0 || component.position.y !== 0) {
+          return component;
+        }
+  
+        return {
+          ...component,
+          position: {
+            x: categoryX,
+            y: LAYOUT_CONFIG.START_Y + (index * (component.height + LAYOUT_CONFIG.COMPONENT_SPACING))
+          }
+        };
+      });
+    });
+  }, [components]);
 
-    {/* Components and connections container */}
-    <div className="relative p-4">
-      {/* Connection lines */}
-      <svg className="absolute inset-0 pointer-events-none">
-        {visibleComponents.map((component) =>
-          (component.connections || []).map((targetId) => (
-            <ConnectionLine
-              key={`${component.id}-${targetId}`}
-              startId={component.id}
-              endId={targetId}
-            />
-          ))
-        )}
-      </svg>
+  React.useEffect(() => {
+    const board = document.getElementById('editor-board');
+    if (board) {
+      const updateViewport = () => {
+        setViewport({
+          x: board.scrollLeft,
+          y: board.scrollTop
+        });
+      };
 
-      {/* Component instances */}
-      {visibleComponents.map((component) => (
-        <ComponentInstance
-          key={component.id}
-          component={component}
-          isSelected={component.id === selectedComponentId}
-          isConnecting={isConnecting}
-          isConnectionStart={component.id === connectionStart}
-          onClick={() => {
-            if (isConnecting) {
-              onConnectionEnd(component.id);
-            } else {
-              onComponentSelect(component.id);
-            }
+      board.addEventListener('scroll', updateViewport);
+      return () => board.removeEventListener('scroll', updateViewport);
+    }
+  }, []);
+
+  const visibleComponents = React.useMemo(() => {
+    return organizedComponents.filter(component => {
+      const { x = 0, y = 0 } = component.position;
+      const buffer = 200; 
+      return x >= viewport.x - buffer && 
+             x <= viewport.x + window.innerWidth + buffer &&
+             y >= viewport.y - buffer && 
+             y <= viewport.y + window.innerHeight + buffer;
+    });
+  }, [organizedComponents, viewport]);
+
+
+
+  const sortedComponents = React.useMemo(() => {
+    return visibleComponents.sort((a, b) => {
+      if (a.id === expandedComponentId) return 1;
+      if (b.id === expandedComponentId) return -1;
+      if (a.id === selectedComponentId) return 1;
+      if (b.id === selectedComponentId) return -1;
+      return 0;
+    });
+  }, [visibleComponents, expandedComponentId, selectedComponentId]);
+ 
+  return (
+    <div
+      id="editor-board"
+      ref={setNodeRef}
+      className={cn(
+        "w-full h-full relative overflow-auto",
+        isOver && "bg-blue-50 transition-colors duration-200",
+        isConnecting && "cursor-crosshair"
+      )}
+      style={{
+        width: '100%',
+        height: '100%',
+        minWidth: `${boardSize.width}px`,
+        minHeight: `${boardSize.height}px`,
+      }}
+      onScroll={handleScroll}
+    >
+      {showGrid && (
+        <div 
+          style={{ 
+            width: `${boardSize.width}px`, 
+            height: `${boardSize.height}px`,
+            position: 'absolute',
+            top: 0,
+            left: 0
           }}
-          onConnectionStart={() => onConnectionStart(component.id)}
-          gridSize={20}
-        />
-      ))}
+        >
+          <Grid isDragging={isOver} zoom={zoom} />
+        </div>
+      )}
+      
+      <div 
+        className="absolute inset-0"
+        style={{ 
+          transform: `scale(${zoom})`,
+          transformOrigin: '0 0',
+          width: `${boardSize.width / zoom}px`,
+          height: `${boardSize.height / zoom}px`
+        }}
+      >
+       
+
+        {/* Components */}
+        <div className="relative">
+          {sortedComponents.map((component) => (
+            <ComponentInstance
+              key={component.id}
+              component={component}
+              isSelected={component.id === selectedComponentId}
+              isConnecting={isConnecting}
+              isConnectionStart={component.id === connectionStart}
+              expandedComponentId={expandedComponentId}
+              onExpand={setExpandedComponentId}
+              onClick={() => {
+                if (isConnecting) {
+                  onConnectionEnd(component.id);
+                } else {
+                  onComponentSelect(component.id);
+                }
+              }}
+            />
+          ))}
+        </div>
+      </div>
     </div>
-  </div>
-);
+  );
 
 };

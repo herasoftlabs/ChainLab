@@ -32,7 +32,7 @@ export const DraggableComponent: React.FC<Props> = ({
         componentType: type,
         category: category,
         stateMutability,
-        dataType
+        dataType: dataType
       }
     }
   });

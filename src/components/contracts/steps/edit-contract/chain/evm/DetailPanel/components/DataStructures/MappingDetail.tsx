@@ -1,23 +1,19 @@
+// components/contracts/steps/edit-contract/chain/evm/DetailPanel/DataStructures/MappingDetail.tsx
 import React from 'react';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DetailComponentProps } from '@/components/contracts/steps/edit-contract/chain/evm/DetailPanel/shared/DetailComponentProps';
-import { 
-  MappingComponentData, 
-  BasicDataType 
-} from '@/types/evm/contractTypes';
+import { MappingComponentData, BasicDataType } from '@/types/evm/contractTypes';
+import { Card } from '@/components/ui/card';
 
 const basicDataTypes: BasicDataType[] = [
   'address', 'bool', 'string', 'bytes',
-  'uint8', 'uint16', 'uint32', 'uint64', 'uint128', 'uint256',
-  'int8', 'int16', 'int32', 'int64', 'int128', 'int256',
-  'bytes1', 'bytes2', 'bytes3', 'bytes4', 'bytes8', 'bytes16', 'bytes32',
+  'uint256', 'uint128', 'uint64', 'uint32',
+  'int256', 'int128', 'int64', 'int32',
+  'bytes32', 'bytes4'
 ];
 
-export const MappingDetail: React.FC<DetailComponentProps> = ({ 
-  data, 
-  onChange 
-}) => {
+export const MappingDetail: React.FC<DetailComponentProps> = ({ data, onChange }) => {
   const mappingData = data as MappingComponentData;
 
   const handleChange = (field: keyof MappingComponentData, value: any) => {
@@ -25,60 +21,59 @@ export const MappingDetail: React.FC<DetailComponentProps> = ({
   };
 
   return (
-    <div className="space-y-4">
-      {/* Mapping Name */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700">Mapping Name</label>
+    <div className="space-y-6">
+      <div className="space-y-2">
+        <label className="text-sm font-medium">Name</label>
         <Input
           value={mappingData.name}
           onChange={(e) => handleChange('name', e.target.value)}
-          placeholder="Enter mapping name"
+          placeholder="balances"
+          className="font-mono"
         />
       </div>
 
-      {/* Key Type */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700">Key Type</label>
-        <Select
-          value={mappingData.keyType}
-          onValueChange={(value) => handleChange('keyType', value)}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Select key type" />
-          </SelectTrigger>
-          <SelectContent>
-            {basicDataTypes.map((type) => (
-              <SelectItem key={type} value={type}>
-                {type}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Key Type</label>
+          <Select
+            value={mappingData.keyType}
+            onValueChange={(value) => handleChange('keyType', value)}
+          >
+            <SelectTrigger className="font-mono">
+              <SelectValue placeholder="Select key type" />
+            </SelectTrigger>
+            <SelectContent>
+              {basicDataTypes.map((type) => (
+                <SelectItem key={type} value={type} className="font-mono">
+                  {type}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Value Type</label>
+          <Select
+            value={typeof mappingData.valueType === 'string' ? mappingData.valueType : ''}
+            onValueChange={(value) => handleChange('valueType', value)}
+          >
+            <SelectTrigger className="font-mono">
+              <SelectValue placeholder="Select value type" />
+            </SelectTrigger>
+            <SelectContent>
+              {basicDataTypes.map((type) => (
+                <SelectItem key={type} value={type} className="font-mono">
+                  {type}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
-      {/* Value Type */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700">Value Type</label>
-        <Select
-          value={typeof mappingData.valueType === 'string' ? mappingData.valueType : ''}
-          onValueChange={(value) => handleChange('valueType', value)}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Select value type" />
-          </SelectTrigger>
-          <SelectContent>
-            {basicDataTypes.map((type) => (
-              <SelectItem key={type} value={type}>
-                {type}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-
-      {/* Visibility */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700">Visibility</label>
+      <div className="space-y-2">
+        <label className="text-sm font-medium">Visibility</label>
         <Select
           value={mappingData.visibility}
           onValueChange={(value) => handleChange('visibility', value)}
@@ -94,31 +89,19 @@ export const MappingDetail: React.FC<DetailComponentProps> = ({
         </Select>
       </div>
 
-      {/* Documentation */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700">Mapping Description</label>
-        <Input
-          value={mappingData.documentation || ''}
-          onChange={(e) => handleChange('documentation', e.target.value)}
-          placeholder="Describe the purpose of this mapping"
-        />
-      </div>
+      
 
-      {/* Mapping Usage Hint */}
-      <div className="text-sm text-gray-500 bg-gray-50 p-2 rounded">
-        <p>💡 Tip: Mappings are key-value stores in Solidity.</p>
-        <p>Example: <code>{`mapping(address => uint) public balances;`}</code></p>
-      </div>
-
-      {/* Mapping Declaration Preview */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700">Mapping Declaration Preview</label>
-        <pre className="bg-gray-100 p-2 rounded text-sm overflow-x-auto">
-          {`mapping(${mappingData.keyType || 'address'} => ${
-            typeof mappingData.valueType === 'string' ? mappingData.valueType : 'uint256'
-          }) ${mappingData.visibility || 'public'} ${mappingData.name || 'myMapping'};`}
+      <Card className="p-4 bg-muted/50">
+        <p className="text-sm text-muted-foreground">
+          💡 Mappings are hash tables that store key-value pairs. They're commonly used 
+          for storing balances, ownership, and other relationships.
+        </p>
+        <pre className="mt-2 text-xs text-muted-foreground">
+          {`// Example usage
+balances[msg.sender] = 1000;
+uint balance = balances[address];`}
         </pre>
-      </div>
+      </Card>
     </div>
   );
 };

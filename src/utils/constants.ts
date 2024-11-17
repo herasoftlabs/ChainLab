@@ -1,14 +1,17 @@
 // src/utils/constants.ts
 import { Platform, Chain, NetworkConfig } from '@/types/projectTypes';
+import { taiko } from 'viem/chains';
 
 // Chain Icons
 export const CHAIN_ICONS = {
   ethereum: '/icons/chains/ethereum.png',
   bnb: '/icons/chains/bnb.png',
   arbitrum: '/icons/chains/arbitrum.png',
-  taiko: '/icons/chains/taiko.png',
   solana: '/icons/chains/solana.png',
   educhain: '/icons/chains/educhain.png',
+  taikomainnet: '/icons/chains/taiko-mainnet.webp',
+  taikohekla: '/icons/chains/taiko-hekla.png',
+  ethereumhekla: '/icons/chains/holesky-logo.png',
   default: '/icons/chains/defaultchain.png'
 } as const;
 
@@ -213,7 +216,91 @@ export const CHAINS: Record<string, Chain> = {
       }
     },
     faucets: ['https://solfaucet.com']
-  }
+  },
+  TAIKO_MAINNET: {
+    id: '167000',
+    key: 'TAIKO_MAINNET',
+    name: 'Taiko Mainnet',
+    icon: CHAIN_ICONS.taikomainnet,
+    platform: 'EVM',
+    testnet: false,
+    nativeCurrency: {
+      name: 'Ether',
+      symbol: 'ETH',
+      decimals: 18
+    },
+    rpcUrls: [
+      'https://rpc.mainnet.taiko.xyz'
+    ] as const,
+    blockExplorers: {
+      default: {
+        name: 'Taiko Block Explorer',
+        url: 'https://taikoscan.io'
+      }
+    },
+    contracts: {
+      multicall3: {
+        address: '0xca11bde05977b3631167028862be2a173976ca11',
+        blockCreated: 751532
+      }
+    }
+  },
+  TAIKO_HEKLA: {
+    id: '167009',
+    key: 'TAIKO_HEKLA',
+    name: 'Taiko Hekla',
+    icon: CHAIN_ICONS.taikohekla,
+    platform: 'EVM',
+    testnet: true,
+    nativeCurrency: {
+      name: 'Ether',
+      symbol: 'ETH',
+      decimals: 18
+    },
+    rpcUrls: [
+      'https://rpc.hekla.taiko.xyz'
+    ] as const,
+    blockExplorers: {
+      default: {
+        name: 'Taiko Block Explorer',
+        url: 'https://hekla.taikoscan.network'
+      }
+    },
+    contracts: {
+      multicall3: {
+        address: '0xca11bde05977b3631167028862be2a173976ca11',
+        blockCreated: 751532
+      }
+    }
+  },
+  ETHEREUM_HOLESKY: {
+    id: '17000',
+    key: 'ETHEREUM_HOLESKY',
+    name: 'Etheruem Holesky',
+    icon: CHAIN_ICONS.taikohekla,
+    platform: 'EVM',
+    testnet: true,
+    nativeCurrency: {
+      name: 'Ether',
+      symbol: 'ETH',
+      decimals: 18
+    },
+    rpcUrls: [
+      'https://1rpc.io/holesky'
+    ] as const,
+    blockExplorers: {
+      default: {
+        name: 'Taiko Block Explorer',
+        url: 'https://holesky.etherscan.io'
+      }
+    },
+    contracts: {
+      multicall3: {
+        address: '0xca11bde05977b3631167028862be2a173976ca11',
+        blockCreated: 751532
+      }
+    }
+  },
 } as const;
 
 // Supported Platforms
@@ -227,8 +314,8 @@ export const SUPPORTED_PLATFORMS: Platform[] = [
   },
   {
     id: 'Solana',
-    name: 'Solana',
-    description: 'Solana blockchain platform',
+    name: 'SVM Compatible',
+    description: 'Solana Virtual Machine compatible blockchains',
     enabled: true,
     chains: Object.values(CHAINS).filter(chain => chain.platform === 'Solana')
   }

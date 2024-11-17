@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Tabs, TabsContent } from '@/components/ui/tabs';
 import ContractSidebar from './ContractSidebar';
-import SelectTemplate from './steps/select-template';
+import SelectTemplate from './steps/select-template/index';
 import EditContract from './steps/edit-contract';
 import TestContract from './steps/test-contract/TestContract';
 import DeployContract from './steps/deploy-contract/index';

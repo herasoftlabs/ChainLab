@@ -13,6 +13,12 @@ import {
 } from 'lucide-react';
 import { LayoutGrid } from 'lucide-react';
 import { useComponentStore } from '@/stores/useComponentStore';
+import { InheritanceManager } from './InheritanceManager';
+import { useProjectStore } from '@/stores/useProjectStore';
+import { ContractInheritance } from '@/types/evm/contractTypes';
+import { Slider } from '@/components/ui/slider';
+import { PlusCircle, MinusCircle } from 'lucide-react';
+import { ZoomControls } from './ZoomControls';
 
 interface Props {
   onSave: () => void;
@@ -25,14 +31,31 @@ interface Props {
 
 export const Toolbar: React.FC<Props> = ({
   onSave,
-  onToggleGrid,
-  showGrid,
   zoom,
   onZoomChange,
   onAutoArrange,
 }) => {
+
   const { canUndo, canRedo, undo, redo } = useUndoRedo();
   const hasUnsavedChanges = useComponentStore((state) => state.hasUnsavedChanges);
+
+  const currentContract = useProjectStore((state) => state.currentContract);
+  const updateContract = useProjectStore((state) => state.updateContract);
+  const currentProject = useProjectStore((state) => state.currentProject);
+
+  const handleInheritanceChange = (inheritance: ContractInheritance[]) => {
+    if (!currentContract || !currentProject) return;
+    
+    const updatedContract = {
+      ...currentContract,
+      inherits: inheritance,
+    };
+    
+    updateContract(currentProject.id, updatedContract);
+  };
+
+  
+  
 
   return (
     <div className="absolute top-4 left-4 z-50 flex items-center space-x-2 bg-white rounded-lg shadow-lg p-2">
@@ -57,24 +80,9 @@ export const Toolbar: React.FC<Props> = ({
       </Button>
 
       <div className="w-px h-4 bg-gray-200" />
-
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={() => onZoomChange(zoom + 0.1)}
-        title="Zoom In"
-      >
-        <ZoomIn className="h-4 w-4" />
-      </Button>
-
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={() => onZoomChange(zoom - 0.1)}
-        title="Zoom Out"
-      >
-        <ZoomOut className="h-4 w-4" />
-      </Button>
+      
+      {/* Zoom Controls */}
+      <ZoomControls zoom={zoom} onZoomChange={onZoomChange} />
 
       <div className="w-px h-4 bg-gray-200" />
 
@@ -87,6 +95,12 @@ export const Toolbar: React.FC<Props> = ({
         <LayoutGrid className="h-4 w-4" />
       </Button>
 
+      <InheritanceManager
+        onInheritanceChange={handleInheritanceChange}
+        currentInheritance={currentContract?.inherits}
+        currentContractId={currentContract?.id || ''}
+      />
+
       <Button
         size="sm"
         onClick={onSave}
@@ -97,7 +111,6 @@ export const Toolbar: React.FC<Props> = ({
         <Save className="h-4 w-4 mr-1" />
         {hasUnsavedChanges ? 'Save*' : 'Save'}
       </Button>
-
     </div>
   );
 };

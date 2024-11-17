@@ -1,23 +1,19 @@
+// components/contracts/steps/edit-contract/chain/evm/DetailPanel/DataStructures/ArrayDetail.tsx
 import React from 'react';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DetailComponentProps } from '@/components/contracts/steps/edit-contract/chain/evm/DetailPanel/shared/DetailComponentProps';
-import { 
-  ArrayComponentData, 
-  BasicDataType 
-} from '@/types/evm/contractTypes';
+import { ArrayComponentData, BasicDataType } from '@/types/evm/contractTypes';
+import { Card } from '@/components/ui/card';
 
 const basicDataTypes: BasicDataType[] = [
   'address', 'bool', 'string', 'bytes',
-  'uint8', 'uint16', 'uint32', 'uint64', 'uint128', 'uint256',
-  'int8', 'int16', 'int32', 'int64', 'int128', 'int256',
-  'bytes1', 'bytes2', 'bytes3', 'bytes4', 'bytes8', 'bytes16', 'bytes32',
+  'uint256', 'uint128', 'uint64', 'uint32',
+  'int256', 'int128', 'int64', 'int32',
+  'bytes32', 'bytes4'
 ];
 
-export const ArrayDetail: React.FC<DetailComponentProps> = ({ 
-  data, 
-  onChange 
-}) => {
+export const ArrayDetail: React.FC<DetailComponentProps> = ({ data, onChange }) => {
   const arrayData = data as ArrayComponentData;
 
   const handleChange = (field: keyof ArrayComponentData, value: any) => {
@@ -25,30 +21,29 @@ export const ArrayDetail: React.FC<DetailComponentProps> = ({
   };
 
   return (
-    <div className="space-y-4">
-      {/* Array Name */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700">Array Name</label>
+    <div className="space-y-6">
+      <div className="space-y-2">
+        <label className="text-sm font-medium">Name</label>
         <Input
           value={arrayData.name}
           onChange={(e) => handleChange('name', e.target.value)}
-          placeholder="Enter array name"
+          placeholder="tokenHolders"
+          className="font-mono"
         />
       </div>
 
-      {/* Array Type */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700">Array Type</label>
+      <div className="space-y-2">
+        <label className="text-sm font-medium">Element Type</label>
         <Select
           value={typeof arrayData.dataType === 'string' ? arrayData.dataType : ''}
           onValueChange={(value) => handleChange('dataType', value)}
         >
-          <SelectTrigger>
-            <SelectValue placeholder="Select array type" />
+          <SelectTrigger className="font-mono">
+            <SelectValue placeholder="Select element type" />
           </SelectTrigger>
           <SelectContent>
             {basicDataTypes.map((type) => (
-              <SelectItem key={type} value={type}>
+              <SelectItem key={type} value={type} className="font-mono">
                 {type}
               </SelectItem>
             ))}
@@ -56,20 +51,19 @@ export const ArrayDetail: React.FC<DetailComponentProps> = ({
         </Select>
       </div>
 
-      {/* Array Length */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700">Array Length</label>
+      <div className="space-y-2">
+        <label className="text-sm font-medium">Fixed Length (Optional)</label>
         <Input
           type="number"
           value={arrayData.length || ''}
           onChange={(e) => handleChange('length', e.target.value ? parseInt(e.target.value) : undefined)}
-          placeholder="Leave blank for dynamic array"
+          placeholder="Leave empty for dynamic array"
+          className="font-mono"
         />
       </div>
 
-      {/* Visibility */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700">Visibility</label>
+      <div className="space-y-2">
+        <label className="text-sm font-medium">Visibility</label>
         <Select
           value={arrayData.visibility}
           onValueChange={(value) => handleChange('visibility', value)}
@@ -85,33 +79,19 @@ export const ArrayDetail: React.FC<DetailComponentProps> = ({
         </Select>
       </div>
 
-      {/* Documentation */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700">Array Description</label>
-        <Input
-          value={arrayData.documentation || ''}
-          onChange={(e) => handleChange('documentation', e.target.value)}
-          placeholder="Describe the purpose of this array"
-        />
-      </div>
+      
 
-      {/* Array Usage Hint */}
-      <div className="text-sm text-gray-500 bg-gray-50 p-2 rounded">
-        <p>💡 Tip: Arrays can be fixed or dynamic in Solidity.</p>
-        <p>Examples:</p>
-        <p><code>uint[] public dynamicArray; // Dynamic array</code></p>
-        <p><code>uint[5] public fixedArray; // Fixed-size array</code></p>
-      </div>
-
-      {/* Array Declaration Preview */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700">Array Declaration Preview</label>
-        <pre className="bg-gray-100 p-2 rounded text-sm overflow-x-auto">
-          {`${typeof arrayData.dataType === 'string' ? arrayData.dataType : 'uint'}${
-            arrayData.length ? `[${arrayData.length}]` : '[]'
-          } ${arrayData.visibility || 'public'} ${arrayData.name || 'myArray'};`}
+      <Card className="p-4 bg-muted/50">
+        <p className="text-sm text-muted-foreground">
+          💡 Arrays can be fixed-size or dynamic. Fixed-size arrays are more 
+          gas-efficient but cannot be resized after creation.
+        </p>
+        <pre className="mt-2 text-xs text-muted-foreground">
+          {`// Example usage
+tokenHolders.push(newHolder);
+address holder = tokenHolders[0];`}
         </pre>
-      </div>
+      </Card>
     </div>
   );
 };

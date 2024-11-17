@@ -2,13 +2,12 @@
 
 import { BodyContent, ComponentType } from '@/types/evm/contractTypes';
 import { IconName } from '@/components/ui/icons';
+import { DataType } from '@/types/evm/contractTypes'; // Yeni eklenen import
 
 export type BasicComponentsSubCategories = 'StateVariables' | 'Constructor' | 'Modifiers' | 'CustomErrors';
 export type FunctionsSubCategories = 'ReadFunctions' | 'WriteFunctions';
 export type EventsSubCategories = 'TransferEvents' | 'StatusEvents' | 'CustomEvents';
 export type DataStructuresSubCategories = 'Struct' | 'Enum' | 'Mapping' | 'Array';
-
-
 
 export type SubCategoryType = 
   | 'StateVariables' 
@@ -25,23 +24,22 @@ export type SubCategoryType =
   | 'Mapping' 
   | 'Array';
 
+export interface Template {
+  id: string;
+  type: ComponentType;
+  name: string;
+  description: string;
+  body: BodyContent;
+  dataType?: DataType; 
+  stateMutability?: 'pure' | 'view' | 'payable' | 'nonpayable';
+}
 
-  export interface Template {
-    id: string;
-    type: ComponentType;
-    name: string;
-    description: string;
-    body: BodyContent;
-    dataType?: string; 
-    stateMutability?: 'pure' | 'view' | 'payable' | 'nonpayable';
-  }
-
-  export interface CategoryItem {
-    title: string;
-    icon: IconName;
-    description?: string;
-    templates: Template[];
-  }
+export interface CategoryItem {
+  title: string;
+  icon: IconName;
+  description?: string;
+  templates: Template[];
+}
 
 export interface SubCategory {
   title: string;
@@ -283,4 +281,3 @@ export const evmCategories: CategoryType = {
     ]
   }
 };
-

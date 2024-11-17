@@ -1,3 +1,4 @@
+// components/contracts/steps/edit-contract/chain/evm/DetailPanel/BasicComponents/ConstructorDetail.tsx
 import React from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -19,10 +20,7 @@ const basicDataTypes: BasicDataType[] = [
   'bytes1', 'bytes2', 'bytes3', 'bytes4', 'bytes8', 'bytes16', 'bytes32',
 ];
 
-interface InheritanceItem {
-  baseContract: string;
-  parameters: FunctionParameter[];
-}
+
 
 export const ConstructorDetail: React.FC<DetailComponentProps> = ({ 
   data, 
@@ -61,33 +59,7 @@ export const ConstructorDetail: React.FC<DetailComponentProps> = ({
     handleChange('parameters', updatedParams);
   };
 
-  const handleAddInheritance = () => {
-    const newInheritance: InheritanceItem = {
-      baseContract: '',
-      parameters: []
-    };
-    const currentInheritance = constructorData.inheritance || [];
-    handleChange('inheritance', [...currentInheritance, newInheritance]);
-  };
-
-  const handleInheritanceChange = (
-    index: number, 
-    field: keyof InheritanceItem, 
-    value: string | FunctionParameter[]
-  ) => {
-    const currentInheritance = [...(constructorData.inheritance || [])];
-    currentInheritance[index] = {
-      ...currentInheritance[index],
-      [field]: value
-    };
-    handleChange('inheritance', currentInheritance);
-  };
-
-  const handleRemoveInheritance = (index: number) => {
-    const currentInheritance = constructorData.inheritance || [];
-    const updatedInheritance = currentInheritance.filter((_, i) => i !== index);
-    handleChange('inheritance', updatedInheritance);
-  };
+  
 
   return (
     <div className="space-y-4">
@@ -136,35 +108,7 @@ export const ConstructorDetail: React.FC<DetailComponentProps> = ({
         </div>
       </div>
 
-      {/* Inheritance */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700">Inheritance</label>
-        <div className="space-y-2">
-          {(constructorData.inheritance || []).map((inherit, index) => (
-            <div key={index} className="flex items-center gap-2">
-              <Input
-                placeholder="Base Contract"
-                value={inherit.baseContract}
-                onChange={(e) => handleInheritanceChange(index, 'baseContract', e.target.value)}
-              />
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                onClick={() => handleRemoveInheritance(index)}
-              >
-                <Trash2 className="h-4 w-4 text-red-500" />
-              </Button>
-            </div>
-          ))}
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={handleAddInheritance}
-          >
-            <Plus className="h-4 w-4 mr-2" /> Add Inheritance
-          </Button>
-        </div>
-      </div>
+      
 
       {/* Constructor Body */}
       <div>

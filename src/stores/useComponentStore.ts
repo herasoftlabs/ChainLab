@@ -43,6 +43,8 @@ interface ComponentState {
   selectedComponentId: string | null;
   draggedComponent: DraggedItemType | null;
   componentOrder: string[];
+  zoom: number;
+  
   
   // Actions
   setSelectedComponentId: (id: string | null) => void;
@@ -64,6 +66,9 @@ interface ComponentState {
     componentId: string, 
     position: ComponentPosition
   ) => void;
+
+  //Zoom
+  setZoom: (zoom: number) => void;
   
   // Bulk Operations
   clearAllComponents: () => void;
@@ -80,6 +85,7 @@ export const useComponentStore = create<ComponentState>()(
       components: {},
       componentOrder: [],
       hasUnsavedChanges: false,
+      zoom: 1,
   
       // Basic Actions
       setSelectedComponentId: (id) => set((state) => ({ 
@@ -93,6 +99,8 @@ export const useComponentStore = create<ComponentState>()(
       setActiveCategory: (category) => set((state) => ({ 
         activeCategory: category 
       })),
+
+      setZoom: (zoom) => set({ zoom }),
       
       // Component CRUD
       addComponent: (component) => set((state) => ({
@@ -109,21 +117,25 @@ export const useComponentStore = create<ComponentState>()(
         componentOrder: [...state.componentOrder, component.id]
       })),
       
-      updateComponent: (componentId, updates) => {
-        set((state) => ({
-          components: {
-            ...state.components,
-            [componentId]: {
-              ...state.components[componentId],
-              ...updates,
-              data: {
-                ...state.components[componentId].data,
-                ...updates.data,
-              },
+      updateComponent: (componentId: string, updates: Partial<DraggableComponent>) => {
+        set((state) => {
+          const updatedComponent = {
+            ...state.components[componentId],
+            ...updates,
+            data: {
+              ...state.components[componentId].data,
+              ...(updates.data || {}),
             },
-          },
-          hasUnsavedChanges: true, 
-        }));
+          } as DraggableComponent;
+      
+          return {
+            components: {
+              ...state.components,
+              [componentId]: updatedComponent,
+            },
+            hasUnsavedChanges: true,
+          } as ComponentState;
+        });
       },
 
       resetUnsavedChanges: () => {
@@ -247,7 +259,12 @@ export const useComponentStore = create<ComponentState>()(
       }))
     }),
     {
-      name: 'component-storage'
+      name: 'component-storage',
+      partialize: (state) => ({
+        components: state.components,
+        componentOrder: state.componentOrder,
+        zoom: state.zoom, 
+      })
     }
   )
 );
