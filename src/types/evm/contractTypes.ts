@@ -1,7 +1,7 @@
 // evm/contractType.ts Dosyası
 
 // -------------------------
-// 1. Ethereum Smart Contract 
+// 1. Ethereum Smart Contract
 // -------------------------
 export interface EthereumContract {
   id: string;
@@ -16,8 +16,8 @@ export interface EthereumContract {
   templateName?: string;
   templateType?: string;
   componentLayout?: {
-    positions: Record<string, { x: number, y: number }>;
-    connections: Array<{ source: string, target: string }>;
+    positions: Record<string, { x: number; y: number }>;
+    connections: Array<{ source: string; target: string }>;
   };
   constructor?: ConstructorComponentData;
   stateVariables: StateVariableComponentData[];
@@ -47,12 +47,14 @@ export interface ContractInheritance {
   id: string;
   contractId: string;
   contractName: string;
+  source?: "project" | "openzeppelin";
+  version?: string;
   constructorParams?: FunctionParameter[];
   accessibleComponents?: {
-    functions: string[];      
-    stateVariables: string[]; 
-    events: string[];        
-    modifiers: string[];    
+    functions: string[];
+    stateVariables: string[];
+    events: string[];
+    modifiers: string[];
   };
 }
 
@@ -60,14 +62,14 @@ export interface SecurityCheck {
   id: string;
   title: string;
   description: string;
-  severity: 'low' | 'medium' | 'high' | 'critical';
-  category: 'inheritance' | 'access' | 'override' | 'general';
+  severity: "low" | "medium" | "high" | "critical";
+  category: "inheritance" | "access" | "override" | "general";
 }
 
 export interface SecurityIssue {
   type: string;
   message: string;
-  severity: 'low' | 'medium' | 'high' | 'critical';
+  severity: "low" | "medium" | "high" | "critical";
   component: string;
   suggestion?: string;
   code?: string;
@@ -92,85 +94,136 @@ export interface OverrideImplementation {
   hasModification: boolean;
 }
 
+export interface OpenZeppelinContract {
+  id: string;
+  name: string;
+  category: "access" | "token" | "security" | "governance" | "utils";
+  version: string;
+  description: string;
+  source: "openzeppelin";
+  components: {
+    constructor?: {
+      id: string;
+      name: string;
+      type: "constructor";
+      parameters: FunctionParameter[];
+      category: ComponentCategoryMain;
+      documentation?: string;
+      body?: BodyContent;
+    };
+    functions: {
+      id: string;
+      name: string;
+      type: "function";
+      visibility: Visibility;
+      stateMutability: Mutability;
+      parameters: FunctionParameter[];
+      returnParameters: FunctionParameter[];
+      modifiers: string[];
+      category: ComponentCategoryMain;
+      documentation?: string;
+      body?: BodyContent;
+    }[];
+    events: {
+      id: string;
+      name: string;
+      type: "event";
+      parameters: EventParameter[];
+      category: ComponentCategoryMain;
+      documentation?: string;
+    }[];
+    modifiers: {
+      id: string;
+      name: string;
+      type: "modifier";
+      parameters: FunctionParameter[];
+      category: ComponentCategoryMain;
+      documentation?: string;
+      body?: BodyContent;
+    }[];
+    stateVariables: {
+      id: string;
+      name: string;
+      type: "variable";
+      dataType: DataType;
+      visibility: Visibility;
+      mutability: VariableMutability;
+      category: ComponentCategoryMain;
+      documentation?: string;
+    }[];
+  };
+}
+
 // -------------------------
 // 2. Basic Types (Visibility ve Mutability)
 // -------------------------
-export type Visibility = 'public' | 'private' | 'internal' | 'external';
-export type Mutability = 'pure' | 'view' | 'payable' | 'nonpayable';
-export type VariableMutability = 'mutable' | 'immutable' | 'constant';
+export type Visibility = "public" | "private" | "internal" | "external";
+export type Mutability = "pure" | "view" | "payable" | "nonpayable";
+export type VariableMutability = "mutable" | "immutable" | "constant";
 
 // -------------------------
 // 3. Data Types
 // -------------------------
 export type BasicDataType =
-  | 'address'
-  | 'bool'
-  | 'string'
-  | 'bytes'
+  | "address"
+  | "bool"
+  | "string"
+  | "bytes"
   | `uint${8 | 16 | 32 | 64 | 128 | 256}`
   | `int${8 | 16 | 32 | 64 | 128 | 256}`
   | `bytes${1 | 2 | 3 | 4 | 8 | 16 | 32}`;
 
-
-
-  export type ComplexDataType =
+export type ComplexDataType =
   | {
-      type: 'array';
+      type: "array";
       baseType: BasicDataType | ComplexDataType;
       isFixed?: boolean;
       length?: number;
     }
   | {
-      type: 'mapping';
+      type: "mapping";
       keyType: BasicDataType;
       valueType: BasicDataType | ComplexDataType;
     }
   | {
-      type: 'struct';
+      type: "struct";
       members: StructMember[];
     }
   | {
-      type: 'enum';
+      type: "enum";
       members: string[];
     };
 
-    export type DataType = BasicDataType | ComplexDataType;
-
-    
+export type DataType = BasicDataType | ComplexDataType;
 
 // -------------------------
 // 4. Component Category and Types
 // -------------------------
 
-
 export type ComponentCategoryMain =
-  | 'StateVariables'
-  | 'BasicComponents'
-  | 'Functions'
-  | 'DataStructures'
-  | 'OracleIntegrations';
+  | "StateVariables"
+  | "BasicComponents"
+  | "Functions"
+  | "DataStructures"
+  | "OracleIntegrations";
 
- 
+export type ComponentType =
+  | "variable"
+  | "constructor"
+  | "modifier"
+  | "error"
+  | "function"
+  | "struct"
+  | "enum"
+  | "mapping"
+  | "array"
+  | "event"
+  | "integration"
+  | "security"
+  | "oracle"
+  | "externalCall";
 
-
-  export type ComponentType =
-  | 'variable'
-  | 'constructor'
-  | 'modifier'
-  | 'error'
-  | 'function'
-  | 'struct'
-  | 'enum'
-  | 'mapping'
-  | 'array'
-  | 'event'
-  | 'integration'
-  | 'security'
-  | 'oracle'
-  | 'externalCall';
-
-
-  export type DraggableComponentData =
+export type DraggableComponentData =
   | (StateVariableComponentData & ComponentDataFields)
   | (ConstructorComponentData & ComponentDataFields)
   | (FunctionComponentData & ComponentDataFields)
@@ -186,7 +239,6 @@ export type ComponentCategoryMain =
   | (OracleIntegrationComponentData & ComponentDataFields)
   | (ExternalCallComponentData & ComponentDataFields);
 
-  
 export interface ComponentDataFields {
   id: string;
   type: ComponentType;
@@ -197,7 +249,6 @@ export interface ComponentDataFields {
   body?: BodyContent;
   inherits?: ContractInheritance[];
 }
-
 
 export interface DraggableComponent {
   id: string;
@@ -218,7 +269,7 @@ export interface ComponentPosition {
 
 /* Drag Actions */
 
-export type DragSourceType = 'new-template' | 'existing-component';
+export type DragSourceType = "new-template" | "existing-component";
 export interface DragTemplateMetadata {
   componentType: ComponentType;
 }
@@ -241,7 +292,7 @@ export type DraggedItemType = {
 };
 
 export interface DragData {
-  type: 'new-template' | 'existing-component';
+  type: "new-template" | "existing-component";
   payload: {
     id?: string;
     componentType: ComponentType;
@@ -268,16 +319,20 @@ export interface BaseComponent {
   name: string;
 }
 /* State Variables */
-export interface StateVariableComponentData extends BaseComponent, ComponentDataFields {
-  type: 'variable';
-  dataType: DataType; 
+export interface StateVariableComponentData
+  extends BaseComponent,
+    ComponentDataFields {
+  type: "variable";
+  dataType: DataType;
   visibility: Visibility;
   mutability: VariableMutability;
   initialValue?: string;
 }
 // Constructor
-export interface ConstructorComponentData extends BaseComponent, ComponentDataFields {
-  type: 'constructor';
+export interface ConstructorComponentData
+  extends BaseComponent,
+    ComponentDataFields {
+  type: "constructor";
   parameters: FunctionParameter[];
   modifiers?: Array<string | ModifierReference>;
   inheritance?: {
@@ -287,8 +342,10 @@ export interface ConstructorComponentData extends BaseComponent, ComponentDataFi
   body?: BodyContent;
 }
 /* Struct */
-export interface StructComponentData extends BaseComponent, ComponentDataFields {
-  type: 'struct';
+export interface StructComponentData
+  extends BaseComponent,
+    ComponentDataFields {
+  type: "struct";
   members: StructMember[];
 }
 export interface StructMember {
@@ -299,19 +356,21 @@ export interface StructMember {
 
 /* Enum */
 export interface EnumComponentData extends BaseComponent, ComponentDataFields {
-  type: 'enum';
+  type: "enum";
   members: string[];
 }
 /* Function */
-export interface FunctionComponentData extends BaseComponent, ComponentDataFields {
-  type: 'function';
+export interface FunctionComponentData
+  extends BaseComponent,
+    ComponentDataFields {
+  type: "function";
   visibility: Visibility;
   stateMutability: Mutability;
   parameters: FunctionParameter[];
   returnParameters: FunctionParameter[];
   modifiers: Array<string | ModifierReference>;
   isVirtual?: boolean;
-  body?: BodyContent; 
+  body?: BodyContent;
   overrides?: OverrideImplementation[];
 }
 export interface ModifierReference {
@@ -326,12 +385,12 @@ export interface FunctionParameter {
   value?: string;
 }
 export interface BodyContent {
-  content?: string; 
-  dependencies?: string[]; 
+  content?: string;
+  dependencies?: string[];
 }
 /* Event */
 export interface EventComponentData extends BaseComponent, ComponentDataFields {
-  type: 'event';
+  type: "event";
   parameters: EventParameter[];
 }
 export interface EventParameter {
@@ -342,102 +401,139 @@ export interface EventParameter {
 }
 /* Error */
 export interface ErrorComponentData extends BaseComponent, ComponentDataFields {
-  type: 'error';
+  type: "error";
   parameters: FunctionParameter[];
 }
 /* Modifier */
-export interface ModifierComponentData extends BaseComponent, ComponentDataFields {
-  type: 'modifier';
+export interface ModifierComponentData
+  extends BaseComponent,
+    ComponentDataFields {
+  type: "modifier";
   parameters: FunctionParameter[];
 }
 /* Mapping */
-export interface MappingComponentData extends BaseComponent, ComponentDataFields {
-  type: 'mapping';
+export interface MappingComponentData
+  extends BaseComponent,
+    ComponentDataFields {
+  type: "mapping";
   keyType: BasicDataType;
   valueType: DataType;
   visibility: Visibility;
 }
 /* Array */
 export interface ArrayComponentData extends BaseComponent, ComponentDataFields {
-  type: 'array';
+  type: "array";
   dataType: DataType;
   length?: number;
   visibility: Visibility;
 }
 /* Integration */
-export interface IntegrationComponentData extends BaseComponent, ComponentDataFields {
-  type: 'integration';
-  standard: 'ERC20' | 'ERC721' | 'ERC1155' | 'Custom';
+export interface IntegrationComponentData
+  extends BaseComponent,
+    ComponentDataFields {
+  type: "integration";
+  standard: "ERC20" | "ERC721" | "ERC1155" | "Custom";
   features: string[];
 }
 /* Security */
-export interface SecurityComponentData extends BaseComponent, ComponentDataFields {
-  type: 'security';
-  featureType: 'ownable' | 'pausable' | 'guard';
+export interface SecurityComponentData
+  extends BaseComponent,
+    ComponentDataFields {
+  type: "security";
+  featureType: "ownable" | "pausable" | "guard";
   implementation: string;
   requirements?: string[];
 }
 /* OracleIntegration */
-export interface OracleIntegrationComponentData extends BaseComponent, ComponentDataFields {
-  type: 'oracle';
-  provider: 'chainlink' | 'band' | 'custom';
+export interface OracleIntegrationComponentData
+  extends BaseComponent,
+    ComponentDataFields {
+  type: "oracle";
+  provider: "chainlink" | "band" | "custom";
   endpoint?: string;
   parameters?: FunctionParameter[];
 }
 /* ExternalCall */
-export interface ExternalCallComponentData extends BaseComponent, ComponentDataFields {
-  type: 'externalCall';
+export interface ExternalCallComponentData
+  extends BaseComponent,
+    ComponentDataFields {
+  type: "externalCall";
   target: string;
   method: string;
   parameters: FunctionParameter[];
   safetyChecks: string[];
 }
 
-
 // -------------------------
 // 6. Type Guards
 // -------------------------
-export function isStateVariableComponentData(data: DraggableComponentData): data is StateVariableComponentData {
-  return data.type === 'variable';
+export function isStateVariableComponentData(
+  data: DraggableComponentData
+): data is StateVariableComponentData {
+  return data.type === "variable";
 }
-export function isFunctionComponentData(data: DraggableComponentData ): data is FunctionComponentData {
-  return data.type === 'function';
+export function isFunctionComponentData(
+  data: DraggableComponentData
+): data is FunctionComponentData {
+  return data.type === "function";
 }
-export function isEventComponentData(data: DraggableComponentData): data is EventComponentData {
-  return data.type === 'event';
+export function isEventComponentData(
+  data: DraggableComponentData
+): data is EventComponentData {
+  return data.type === "event";
 }
-export function isModifierComponentData(data: DraggableComponentData): data is ModifierComponentData {
-  return data.type === 'modifier';
+export function isModifierComponentData(
+  data: DraggableComponentData
+): data is ModifierComponentData {
+  return data.type === "modifier";
 }
-export function isErrorComponentData(data: DraggableComponentData): data is ErrorComponentData {
-  return data.type === 'error';
+export function isErrorComponentData(
+  data: DraggableComponentData
+): data is ErrorComponentData {
+  return data.type === "error";
 }
-export function isStructComponentData(data: DraggableComponentData): data is StructComponentData {
-  return data.type === 'struct';
+export function isStructComponentData(
+  data: DraggableComponentData
+): data is StructComponentData {
+  return data.type === "struct";
 }
-export function isEnumComponentData(data: DraggableComponentData): data is EnumComponentData {
-  return data.type === 'enum';
+export function isEnumComponentData(
+  data: DraggableComponentData
+): data is EnumComponentData {
+  return data.type === "enum";
 }
-export function isMappingComponentData(data: DraggableComponentData): data is MappingComponentData {
-  return data.type === 'mapping';
+export function isMappingComponentData(
+  data: DraggableComponentData
+): data is MappingComponentData {
+  return data.type === "mapping";
 }
-export function isArrayComponentData(data: DraggableComponentData): data is ArrayComponentData {
-  return data.type === 'array';
+export function isArrayComponentData(
+  data: DraggableComponentData
+): data is ArrayComponentData {
+  return data.type === "array";
 }
-export function isIntegrationComponentData(data: DraggableComponentData): data is IntegrationComponentData {
-  return data.type === 'integration';
+export function isIntegrationComponentData(
+  data: DraggableComponentData
+): data is IntegrationComponentData {
+  return data.type === "integration";
 }
-export function isSecurityComponentData(data: DraggableComponentData): data is SecurityComponentData {
-  return data.type === 'security';
+export function isSecurityComponentData(
+  data: DraggableComponentData
+): data is SecurityComponentData {
+  return data.type === "security";
 }
-export function isOracleIntegrationComponentData(data: DraggableComponentData): data is OracleIntegrationComponentData {
-  return data.type === 'oracle';
+export function isOracleIntegrationComponentData(
+  data: DraggableComponentData
+): data is OracleIntegrationComponentData {
+  return data.type === "oracle";
 }
-export function isExternalCallComponentData(data: DraggableComponentData): data is ExternalCallComponentData {
-  return data.type === 'externalCall';
+export function isExternalCallComponentData(
+  data: DraggableComponentData
+): data is ExternalCallComponentData {
+  return data.type === "externalCall";
 }
 export function isConstructorComponentData(
   data: DraggableComponentData
 ): data is ConstructorComponentData {
-  return data.type === 'constructor';
+  return data.type === "constructor";
 }

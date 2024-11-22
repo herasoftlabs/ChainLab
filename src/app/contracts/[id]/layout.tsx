@@ -1,6 +1,6 @@
-import React from 'react';
-import { ReactNode } from 'react';
-import { Analytics } from "@vercel/analytics/react"
+import React from "react";
+import { ReactNode } from "react";
+import { Analytics } from "@vercel/analytics/react";
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (

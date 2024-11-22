@@ -1,9 +1,9 @@
 // src/types/projectTypes.ts
-import { EthereumContract } from '@/types/evm/contractTypes';
+import { EthereumContract } from "@/types/evm/contractTypes";
 
 // Platform Types
-export type PlatformType = 'EVM' | 'Solana';
-export type ProjectType = 'App' | 'Game';
+export type PlatformType = "EVM" | "Solana";
+export type ProjectType = "App" | "Game";
 
 // Chain Related Types
 export interface NativeCurrency {
@@ -19,7 +19,7 @@ export interface BlockExplorer {
 
 export interface BlockExplorers {
   default: BlockExplorer;
-  [key: string]: BlockExplorer; 
+  [key: string]: BlockExplorer;
 }
 
 export interface ContractAddress {
@@ -79,7 +79,7 @@ export interface Template<TContract> {
   contract: TContract;
   category?: string;
   tags?: string[];
-  complexity?: 'Beginner' | 'Intermediate' | 'Advanced';
+  complexity?: "Beginner" | "Intermediate" | "Advanced";
 }
 
 // Chain Metadata Types (for deployment)
@@ -115,7 +115,7 @@ export interface NetworkConfig {
 }
 
 // Project Status Types
-export type ProjectStatus = 'draft' | 'deployed' | 'verified';
+export type ProjectStatus = "draft" | "deployed" | "verified";
 
 // Extended Project Interface with Status
 export interface ProjectWithStatus extends Project {

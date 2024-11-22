@@ -20,7 +20,7 @@ Chainlab is a platform designed to simplify the development process of blockchai
 - **User-Friendly**: Design professional blockchain projects without technical knowledge using an intuitive interface.
 - **Reliable and Flexible**: Chainlab utilizes the most popular and trusted blockchain standards, making your projects future-proof.
 - **Easy Deployment**: Deploy your projects with just a few clicks and reach your audience online.
-  
+
 ## Key Features
 
 - **Ready-to-Use Templates**: Popular templates such as ERC20, ERC721, DAO, and NFT.

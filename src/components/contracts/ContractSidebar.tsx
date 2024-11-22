@@ -1,8 +1,8 @@
 // components/contracts/ContractSidebar.tsx
 
-import React from 'react';
-import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
+import React from "react";
+import { useRouter } from "next/navigation";
+
 import {
   ChevronLeft,
   FilePlus,
@@ -10,14 +10,15 @@ import {
   TestTube,
   Upload,
   Rocket,
-} from 'lucide-react';
+} from "lucide-react";
 import {
   TooltipProvider,
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from '@/components/ui/tooltip';
-import { cn } from '@/lib/utils'; 
+} from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
+import { Button } from "../ui/button";
 
 interface ContractSidebarProps {
   currentTab: string;
@@ -25,11 +26,11 @@ interface ContractSidebarProps {
 }
 
 const tabs = [
-  { value: 'selectTemplate', label: 'Select Template', icon: FilePlus },
-  { value: 'editContract', label: 'Edit Contract', icon: Edit },
-  { value: 'testContract', label: 'Test Contract', icon: TestTube },
-  { value: 'deployContract', label: 'Deploy Contract', icon: Upload },
-  { value: 'publishDapp', label: 'Publish DApp', icon: Rocket },
+  { value: "selectTemplate", label: "Select Template", icon: FilePlus },
+  { value: "editContract", label: "Edit Contract", icon: Edit },
+  { value: "testContract", label: "Test Contract", icon: TestTube },
+  { value: "deployContract", label: "Deploy Contract", icon: Upload },
+  { value: "publishDapp", label: "Publish DApp", icon: Rocket },
 ];
 
 const ContractSidebar: React.FC<ContractSidebarProps> = ({
@@ -49,7 +50,7 @@ const ContractSidebar: React.FC<ContractSidebarProps> = ({
                 variant="outline"
                 size="icon"
                 aria-label="Back to Project"
-                onClick={() => router.push('/dashboard')}
+                onClick={() => router.push("/dashboard")}
               >
                 <ChevronLeft className="w-5 h-5" />
               </Button>
@@ -75,11 +76,11 @@ const ContractSidebar: React.FC<ContractSidebarProps> = ({
                     variant="ghost"
                     size="icon"
                     className={cn(
-                      'rounded-lg mb-2',
+                      "rounded-lg mb-2",
                       isActive
-                        ? 'bg-primary text-white'
-                        : 'hover:bg-primary hover:text-white',
-                      'transition-colors duration-200'
+                        ? "bg-primary text-white"
+                        : "hover:bg-primary hover:text-white",
+                      "transition-colors duration-200"
                     )}
                     aria-label={tab.label}
                     onClick={() => setCurrentTab(tab.value)}

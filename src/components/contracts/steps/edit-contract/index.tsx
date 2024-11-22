@@ -1,34 +1,63 @@
 // components/contracts/steps/edit-contract/chain/evm/index.tsx
 
-import React, { useState, useEffect, useRef } from 'react';
-import { 
-  DndContext, DragEndEvent, DragStartEvent, DragMoveEvent,
-  useSensor, useSensors, PointerSensor, MouseSensor, DragOverlay
-} from '@dnd-kit/core';
-import { useProjectStore } from '@/stores/useProjectStore';
-import { DraggedItemType, DragData } from '@/types/evm/contractTypes';
-import { useComponentStore } from '@/stores/useComponentStore';
-import { useWebContainerStore } from '@/stores/useWebContainerStore';
-import { nanoid } from 'nanoid';
-import { ComponentPalette } from '@/components/contracts/steps/edit-contract/chain/evm/ComponentPalette';
-import { EditorBoard } from '@/components/contracts/steps/edit-contract/chain/evm/EditorBoard';
-import { DetailPanel } from '@/components/contracts/steps/edit-contract/chain/evm/DetailPanel';
-import { Toolbar } from '@/components/contracts/steps/edit-contract/chain/evm/EditorBoard/Toolbar';
-import { UndoRedoProvider } from '@/components/contracts/steps/edit-contract/chain/evm/EditorBoard/UndoRedoProvider';
-import { toast } from 'react-toastify';
-import { contractToComponents } from '@/utils/chains/evm/contractToComponents';
-import { DraggableComponent, ComponentCategoryMain} from '@/types/evm/contractTypes';
-import { ComponentInstance } from '@/components/contracts/steps/edit-contract/chain/evm/EditorBoard/ComponentInstance';
-import { createComponentData } from '@/utils/chains/evm/componentFactory';
+import React, { useState, useEffect, useRef } from "react";
+import {
+  DndContext,
+  DragEndEvent,
+  DragStartEvent,
+  DragMoveEvent,
+  useSensor,
+  useSensors,
+  PointerSensor,
+  MouseSensor,
+  DragOverlay,
+} from "@dnd-kit/core";
+import { useProjectStore } from "@/stores/useProjectStore";
+import { DraggedItemType, DragData } from "@/types/evm/contractTypes";
+import { useComponentStore } from "@/stores/useComponentStore";
+import { useWebContainerStore } from "@/stores/useWebContainerStore";
+import { nanoid } from "nanoid";
+import { ComponentPalette } from "@/components/contracts/steps/edit-contract/chain/evm/ComponentPalette";
+import { EditorBoard } from "@/components/contracts/steps/edit-contract/chain/evm/EditorBoard";
+import { DetailPanel } from "@/components/contracts/steps/edit-contract/chain/evm/DetailPanel";
+import { Toolbar } from "@/components/contracts/steps/edit-contract/chain/evm/EditorBoard/Toolbar";
+import { UndoRedoProvider } from "@/components/contracts/steps/edit-contract/chain/evm/EditorBoard/UndoRedoProvider";
+import { toast } from "react-toastify";
+import { contractToComponents } from "@/utils/chains/evm/contractToComponents";
+import {
+  DraggableComponent,
+  ComponentCategoryMain,
+} from "@/types/evm/contractTypes";
+import { ComponentInstance } from "@/components/contracts/steps/edit-contract/chain/evm/EditorBoard/ComponentInstance";
+import { createComponentData } from "@/utils/chains/evm/componentFactory";
 /* import { generateSolidityCode } from '@/utils/chain-specific//componentsToSolidity'; */
-import { EthereumContract,FunctionComponentData, StateVariableComponentData, EventComponentData, ErrorComponentData, ModifierComponentData, StructComponentData, EnumComponentData, MappingComponentData, ArrayComponentData, IntegrationComponentData, SecurityComponentData, OracleIntegrationComponentData, ExternalCallComponentData, ConstructorComponentData } from '@/types/evm/contractTypes';
+import {
+  EthereumContract,
+  FunctionComponentData,
+  StateVariableComponentData,
+  EventComponentData,
+  ErrorComponentData,
+  ModifierComponentData,
+  StructComponentData,
+  EnumComponentData,
+  MappingComponentData,
+  ArrayComponentData,
+  IntegrationComponentData,
+  SecurityComponentData,
+  OracleIntegrationComponentData,
+  ExternalCallComponentData,
+  ConstructorComponentData,
+} from "@/types/evm/contractTypes";
 const EditContract: React.FC = () => {
-
   const currentProject = useProjectStore((state) => state.currentProject);
   const currentContract = useProjectStore((state) => state.currentContract);
-  const resetUnsavedChanges = useComponentStore((state) => state.resetUnsavedChanges);
+  const resetUnsavedChanges = useComponentStore(
+    (state) => state.resetUnsavedChanges
+  );
   const removeComponent = useComponentStore((state) => state.removeComponent);
-  const hasUnsavedChanges = useComponentStore((state) => state.hasUnsavedChanges);
+  const hasUnsavedChanges = useComponentStore(
+    (state) => state.hasUnsavedChanges
+  );
 
   const {
     components,
@@ -39,19 +68,21 @@ const EditContract: React.FC = () => {
     setSelectedComponentId,
     setDraggedComponent,
     updateComponentPosition,
-    importComponents
+    importComponents,
   } = useComponentStore();
   /* const { writeFile } = useWebContainerStore(); */
 
   // Local state
-  const zoom = useComponentStore((state) => state.zoom); 
-  const setZoom = useComponentStore((state) => state.setZoom); 
+  const zoom = useComponentStore((state) => state.zoom);
+  const setZoom = useComponentStore((state) => state.setZoom);
 
-  const [showGrid, setShowGrid] = useState(true);                       
-  const [isConnecting, setIsConnecting] = useState(false);              
-  const [connectionStart, setConnectionStart] = useState<string | null>(null); 
+  const [showGrid, setShowGrid] = useState(true);
+  const [isConnecting, setIsConnecting] = useState(false);
+  const [connectionStart, setConnectionStart] = useState<string | null>(null);
   const updateContract = useProjectStore((state) => state.updateContract);
-  const [expandedComponentId, setExpandedComponentId] = useState<string | null>(null);
+  const [expandedComponentId, setExpandedComponentId] = useState<string | null>(
+    null
+  );
   const pointerPositionRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
 
   const sensors = useSensors(
@@ -63,7 +94,6 @@ const EditContract: React.FC = () => {
     })
   );
 
- 
   useEffect(() => {
     if (currentContract) {
       const convertedComponents = contractToComponents(currentContract);
@@ -71,10 +101,10 @@ const EditContract: React.FC = () => {
       importComponents(componentsArray);
 
       // Debug information
-      console.group('🔄 Contract to Components Conversion');
-      console.log('📄 Current Contract:', currentContract);
-      console.log('🧩 Converted Components:', convertedComponents);
-      console.log('🗺️ Component Layout:', currentContract.componentLayout);
+      console.group("🔄 Contract to Components Conversion");
+      console.log("📄 Current Contract:", currentContract);
+      console.log("🧩 Converted Components:", convertedComponents);
+      console.log("🗺️ Component Layout:", currentContract.componentLayout);
       console.groupEnd();
     }
   }, [currentContract?.id, importComponents]);
@@ -83,17 +113,16 @@ const EditContract: React.FC = () => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       if (hasUnsavedChanges) {
         e.preventDefault();
-        e.returnValue = '';
+        e.returnValue = "";
       }
     };
-  
-    window.addEventListener('beforeunload', handleBeforeUnload);
-  
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
     return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
+      window.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, [hasUnsavedChanges]);
-  
 
   const handleDelete = (componentId: string) => {
     removeComponent(componentId);
@@ -101,45 +130,45 @@ const EditContract: React.FC = () => {
 
   const handleDragStart = (event: DragStartEvent) => {
     const { active } = event;
-    console.group('🎯 Drag Start');
-    console.log('⚡ Active Element:', active);
-    console.log('📦 Active Data:', active.data.current);
-    
+    console.group("🎯 Drag Start");
+    console.log("⚡ Active Element:", active);
+    console.log("📦 Active Data:", active.data.current);
+
     // Dragging a new template
-    if (active.data.current?.type === 'new-template') {
+    if (active.data.current?.type === "new-template") {
       const dragData = active.data.current as DragData;
-      console.log('🆕 New Template Drag:', dragData);
-      
+      console.log("🆕 New Template Drag:", dragData);
+
       const componentData: DraggedItemType = {
         id: nanoid(),
         type: dragData.payload.componentType,
         data: {
           type: dragData.payload.componentType,
-          visibility: 'public',
+          visibility: "public",
           parameters: [],
           returnParameters: [],
           modifiers: [],
-          category: dragData.payload.category || 'Functions', 
+          category: dragData.payload.category || "Functions",
           stateMutability: dragData.payload.stateMutability,
           dataType: dragData.payload.dataType,
-          body: { content: '' },
-          defaultValues: {}
+          body: { content: "" },
+          defaultValues: {},
         },
         position: { x: 0, y: 0 },
         connections: [],
         width: 200,
         height: 100,
-        documentation: ''
+        documentation: "",
       };
-      
+
       setDraggedComponent(componentData);
-      console.log('✨ Created Template Data:', componentData);
+      console.log("✨ Created Template Data:", componentData);
     }
     // Dragging an existing component
     else if (active.data.current?.component) {
       const draggedComponent = active.data.current.component;
-      console.log('🔄 Dragged Component:', draggedComponent);
-      
+      console.log("🔄 Dragged Component:", draggedComponent);
+
       const componentData: DraggedItemType = {
         id: draggedComponent.id || nanoid(),
         type: draggedComponent.type,
@@ -148,28 +177,26 @@ const EditContract: React.FC = () => {
         connections: [],
         width: 200,
         height: 100,
-        documentation: ''
+        documentation: "",
       };
-      
+
       setDraggedComponent(componentData);
-      console.log('✨ Created Component Data:', componentData);
+      console.log("✨ Created Component Data:", componentData);
     }
-    
+
     // Reset pointer position
     pointerPositionRef.current = { x: 0, y: 0 };
     console.groupEnd();
   };
-  
 
   const handleDragEnd = (event: DragEndEvent) => {
-
-    console.group('🎯 Drag End');
+    console.group("🎯 Drag End");
     const { active, over } = event;
-    console.log('⚡ Active Element:', active);
-    console.log('🎯 Over Element:', over);
+    console.log("⚡ Active Element:", active);
+    console.log("🎯 Over Element:", over);
 
-    if (!over || over.id !== 'editor-board') {
-      console.log('❌ Invalid drop target');
+    if (!over || over.id !== "editor-board") {
+      console.log("❌ Invalid drop target");
       setDraggedComponent(null);
       console.groupEnd();
       return;
@@ -179,23 +206,24 @@ const EditContract: React.FC = () => {
     if (!dragData) return;
 
     try {
-      const boardElement = document.getElementById('editor-board');
+      const boardElement = document.getElementById("editor-board");
       if (!boardElement) return;
 
       const boardRect = boardElement.getBoundingClientRect();
       const activeRect = active.rect.current?.translated;
       if (!activeRect) return;
 
-      const relativeX = activeRect.left - boardRect.left + boardElement.scrollLeft;
+      const relativeX =
+        activeRect.left - boardRect.left + boardElement.scrollLeft;
       const relativeY = activeRect.top - boardRect.top + boardElement.scrollTop;
       const position = {
-        x: Math.round((relativeX / zoom) / 20) * 20,
-        y: Math.round((relativeY / zoom) / 20) * 20
+        x: Math.round(relativeX / zoom / 20) * 20,
+        y: Math.round(relativeY / zoom / 20) * 20,
       };
 
-      console.log('📍 Calculated Position:', position);
+      console.log("📍 Calculated Position:", position);
 
-      if (dragData.type === 'new-template') {
+      if (dragData.type === "new-template") {
         const componentId = nanoid();
 
         const newComponentData = createComponentData(
@@ -221,7 +249,7 @@ const EditContract: React.FC = () => {
         addComponent(newComponent);
         setSelectedComponentId(componentId);
 
-        console.log('✨ New Component Created:', {
+        console.log("✨ New Component Created:", {
           id: componentId,
           type: dragData.payload.componentType,
           data: newComponent.data,
@@ -232,22 +260,20 @@ const EditContract: React.FC = () => {
           documentation: newComponent.documentation,
           isNew: true,
         });
-
       } else {
         // Move existing component
         if (dragData.payload.id) {
           updateComponentPosition(dragData.payload.id, position);
         }
 
-        console.log('🔄 Component Moved:', {
+        console.log("🔄 Component Moved:", {
           id: dragData.payload.id,
-          newPosition: position
+          newPosition: position,
         });
       }
-      
     } catch (error) {
-      console.error('❌ Drag End Error:', error);
-      toast.error('Failed to handle component drag');
+      console.error("❌ Drag End Error:", error);
+      toast.error("Failed to handle component drag");
     } finally {
       setDraggedComponent(null);
       console.groupEnd();
@@ -258,161 +284,153 @@ const EditContract: React.FC = () => {
   const handleDragMove = (event: DragMoveEvent) => {
     const { active, delta } = event;
 
-    if (active.data.current?.type === 'existing-component') {
+    if (active.data.current?.type === "existing-component") {
       const prevPosition = { ...pointerPositionRef.current };
       pointerPositionRef.current = {
         x: pointerPositionRef.current.x + delta.x,
-        y: pointerPositionRef.current.y + delta.y
+        y: pointerPositionRef.current.y + delta.y,
       };
 
-      console.log('📍 Component Move:', {
+      console.log("📍 Component Move:", {
         componentId: active.data.current?.payload?.id,
         delta,
         previousPosition: prevPosition,
-        newPosition: pointerPositionRef.current
+        newPosition: pointerPositionRef.current,
       });
     }
   };
 
   // Handle contract save
   const handleSaveContract = async () => {
-    
-    console.log('handleSave called');
-    console.log('currentProject:', currentProject);
-    console.log('currentContract:', currentContract);
+    console.log("handleSave called");
+    console.log("currentProject:", currentProject);
+    console.log("currentContract:", currentContract);
 
     if (!currentContract || !currentProject) return;
     const projectId = currentProject.id;
 
-    console.group('💾 Saving Contract');
-    console.log('Current Components:', components);
-    console.log('Component Order:', Object.keys(components));
-    console.log('Connections:', Object.values(components).map(c => ({ id: c.id, connections: c.connections })));
+    console.group("💾 Saving Contract");
+    console.log("Current Components:", components);
+    console.log("Component Order:", Object.keys(components));
+    console.log(
+      "Connections:",
+      Object.values(components).map((c) => ({
+        id: c.id,
+        connections: c.connections,
+      }))
+    );
 
     try {
+      const functions: FunctionComponentData[] = [];
+      const stateVariables: StateVariableComponentData[] = [];
+      const events: EventComponentData[] = [];
+      const errors: ErrorComponentData[] = [];
+      const modifiers: ModifierComponentData[] = [];
+      const structs: StructComponentData[] = [];
+      const enums: EnumComponentData[] = [];
+      const mappings: MappingComponentData[] = [];
+      const arrays: ArrayComponentData[] = [];
+      const integrations: IntegrationComponentData[] = [];
+      const securityFeatures: SecurityComponentData[] = [];
+      const oracleIntegrations: OracleIntegrationComponentData[] = [];
+      const externalCalls: ExternalCallComponentData[] = [];
+      let constructorData: ConstructorComponentData | undefined;
 
-    const functions: FunctionComponentData[] = [];
-    const stateVariables: StateVariableComponentData[] = [];
-    const events: EventComponentData[] = [];
-    const errors: ErrorComponentData[] = [];
-    const modifiers: ModifierComponentData[] = [];
-    const structs: StructComponentData[] = [];
-    const enums: EnumComponentData[] = [];
-    const mappings: MappingComponentData[] = [];
-    const arrays: ArrayComponentData[] = [];
-    const integrations: IntegrationComponentData[] = [];
-    const securityFeatures: SecurityComponentData[] = [];
-    const oracleIntegrations: OracleIntegrationComponentData[] = [];
-    const externalCalls: ExternalCallComponentData[] = [];
-    let constructorData: ConstructorComponentData | undefined
+      Object.values(components).forEach((component) => {
+        const data = component.data;
 
-    Object.values(components).forEach((component) => {
-      const data = component.data;
-
-      switch (data.type) {
-        case 'function':
-          functions.push(data as FunctionComponentData);
-          break;
-        case 'variable':
-          stateVariables.push(data as StateVariableComponentData);
-          break;
-        case 'event':
-          events.push(data as EventComponentData);
-          break;
-        case 'error':
-          errors.push(data as ErrorComponentData);
-          break;
-        case 'modifier':
-          modifiers.push(data as ModifierComponentData);
-          break;
-        case 'struct':
-          structs.push(data as StructComponentData);
-          break;
-        case 'enum':
-          enums.push(data as EnumComponentData);
-          break;
-        case 'mapping':
-          mappings.push(data as MappingComponentData);
-          break;
-        case 'array':
-          arrays.push(data as ArrayComponentData);
-          break;
-        case 'integration':
-          integrations.push(data as IntegrationComponentData);
-          break;
-        case 'security':
-          securityFeatures.push(data as SecurityComponentData);
-          break;
-        case 'oracle':
-          oracleIntegrations.push(
-            data as OracleIntegrationComponentData
-          );
-          break;
-        case 'externalCall':
-          externalCalls.push(
-            data as ExternalCallComponentData
-          );
-          break;
-        case 'constructor':
-          constructorData = data as ConstructorComponentData;
-          break;
-        
-      }
-    });
+        switch (data.type) {
+          case "function":
+            functions.push(data as FunctionComponentData);
+            break;
+          case "variable":
+            stateVariables.push(data as StateVariableComponentData);
+            break;
+          case "event":
+            events.push(data as EventComponentData);
+            break;
+          case "error":
+            errors.push(data as ErrorComponentData);
+            break;
+          case "modifier":
+            modifiers.push(data as ModifierComponentData);
+            break;
+          case "struct":
+            structs.push(data as StructComponentData);
+            break;
+          case "enum":
+            enums.push(data as EnumComponentData);
+            break;
+          case "mapping":
+            mappings.push(data as MappingComponentData);
+            break;
+          case "array":
+            arrays.push(data as ArrayComponentData);
+            break;
+          case "integration":
+            integrations.push(data as IntegrationComponentData);
+            break;
+          case "security":
+            securityFeatures.push(data as SecurityComponentData);
+            break;
+          case "oracle":
+            oracleIntegrations.push(data as OracleIntegrationComponentData);
+            break;
+          case "externalCall":
+            externalCalls.push(data as ExternalCallComponentData);
+            break;
+          case "constructor":
+            constructorData = data as ConstructorComponentData;
+            break;
+        }
+      });
 
       // Build the updated contract
-    const updatedContract: EthereumContract = {
-      ...currentContract,
-      constructor: constructorData,
-      stateVariables,
-      functions,
-      events,
-      errors,
-      modifiers,
-      structs,
-      enums,
-      mappings,
-      arrays,
-      integrations,
-      securityFeatures,
-      oracleIntegrations,
-      externalCalls,
-      componentLayout: {
-        positions: Object.values(components).reduce(
-          (acc, component) => {
+      const updatedContract: EthereumContract = {
+        ...currentContract,
+        constructor: constructorData,
+        stateVariables,
+        functions,
+        events,
+        errors,
+        modifiers,
+        structs,
+        enums,
+        mappings,
+        arrays,
+        integrations,
+        securityFeatures,
+        oracleIntegrations,
+        externalCalls,
+        componentLayout: {
+          positions: Object.values(components).reduce((acc, component) => {
             acc[component.id] = component.position;
             return acc;
-          },
-          {} as Record<
-            string,
-            { x: number; y: number }
-          >
-        ),
-        connections: Object.values(components).flatMap(
-          (component) =>
+          }, {} as Record<string, { x: number; y: number }>),
+          connections: Object.values(components).flatMap((component) =>
             component.connections.map((targetId) => ({
               source: component.id,
               target: targetId,
             }))
-        ),
-      },
-    };
-  
+          ),
+        },
+      };
+
       updateContract(projectId, updatedContract);
       resetUnsavedChanges();
       /* const solidityCode = generateSolidityCode(updatedContract); */
-  
+
       // Save to WebContainer
       /* await writeFile(
         `/contracts/${currentContract.name}.sol`,
         solidityCode
       ); */
-  
-      console.log('Updated Contract:', updatedContract);
-      toast.success('Contract saved successfully');
+
+      console.log("Updated Contract:", updatedContract);
+      toast.success("Contract saved successfully");
     } catch (error) {
-      console.error('Save Error:', error);
-      toast.error('Error saving contract');
+      console.error("Save Error:", error);
+      toast.error("Error saving contract");
     } finally {
       console.groupEnd();
     }
@@ -420,42 +438,40 @@ const EditContract: React.FC = () => {
 
   // Handle connections
   const handleConnectionStart = (componentId: string) => {
-    console.log('🔗 Connection Start:', {
+    console.log("🔗 Connection Start:", {
       componentId,
-      component: components[componentId]
+      component: components[componentId],
     });
     setIsConnecting(true);
     setConnectionStart(componentId);
   };
 
   const handleConnectionEnd = (componentId: string) => {
-
-    console.group('🔗 Connection End');
-    console.log('Start Component:', connectionStart);
-    console.log('End Component:', componentId);
+    console.group("🔗 Connection End");
+    console.log("Start Component:", connectionStart);
+    console.log("End Component:", componentId);
 
     if (connectionStart && connectionStart !== componentId) {
-
       const startComponent = components[connectionStart];
       const endComponent = components[componentId];
 
-      console.log('Connection Details:', {
+      console.log("Connection Details:", {
         from: {
           id: connectionStart,
           type: startComponent.type,
-          name: startComponent.data.name
+          name: startComponent.data.name,
         },
         to: {
           id: componentId,
           type: endComponent.type,
-          name: endComponent.data.name
-        }
+          name: endComponent.data.name,
+        },
       });
 
       updateComponent(connectionStart, {
-        connections: [...components[connectionStart].connections, componentId]
+        connections: [...components[connectionStart].connections, componentId],
       });
-      toast.success('Connection created successfully');
+      toast.success("Connection created successfully");
     }
     setIsConnecting(false);
     setConnectionStart(null);
@@ -473,242 +489,246 @@ const EditContract: React.FC = () => {
       connections: [],
       width: 200,
       height: 100,
-      documentation: '',
+      documentation: "",
       isNew: true,
     };
-  
+
     switch (draggedComponent.type) {
-      case 'function': {
+      case "function": {
         return {
           ...baseComponent,
           data: {
             id: draggedComponent.id,
-            type: 'function',
+            type: "function",
             name: `New Function`,
-            category: 'Functions',
-            visibility: 'public',
+            category: "Functions",
+            visibility: "public",
             stateMutability:
-              draggedComponent.data.stateMutability || 'nonpayable',
+              draggedComponent.data.stateMutability || "nonpayable",
             parameters: [],
             returnParameters: [],
             modifiers: [],
-            body: { content: '' },
+            body: { content: "" },
             defaultValues: {},
           },
         } as DraggableComponent;
       }
-  
-      case 'variable': {
+
+      case "variable": {
         return {
           ...baseComponent,
           data: {
             id: draggedComponent.id,
-            type: 'variable',
+            type: "variable",
             name: `New Variable`,
-            category: 'StateVariables',
-            dataType: draggedComponent.data.dataType || 'uint256',
-            visibility: 'public',
-            mutability: 'mutable',
-            initialValue: '',
+            category: "StateVariables",
+            dataType: draggedComponent.data.dataType || "uint256",
+            visibility: "public",
+            mutability: "mutable",
+            initialValue: "",
             defaultValues: {},
           },
         } as DraggableComponent;
       }
-  
-      case 'constructor': {
+
+      case "constructor": {
         return {
           ...baseComponent,
           data: {
             id: draggedComponent.id,
-            type: 'constructor',
-            name: 'Constructor',
-            category: 'BasicComponents',
+            type: "constructor",
+            name: "Constructor",
+            category: "BasicComponents",
             parameters: [],
             modifiers: [],
-            body: { content: '' },
+            body: { content: "" },
             defaultValues: {},
           },
         } as DraggableComponent;
       }
-  
-      case 'event': {
+
+      case "event": {
         return {
           ...baseComponent,
           data: {
             id: draggedComponent.id,
-            type: 'event',
+            type: "event",
             name: `New Event`,
-            category: 'BasicComponents',
+            category: "BasicComponents",
             parameters: [],
             defaultValues: {},
           },
         } as DraggableComponent;
       }
-  
-      case 'modifier': {
+
+      case "modifier": {
         return {
           ...baseComponent,
           data: {
             id: draggedComponent.id,
-            type: 'modifier',
+            type: "modifier",
             name: `New Modifier`,
-            category: 'BasicComponents',
+            category: "BasicComponents",
             parameters: [],
-            body: { content: '' },
+            body: { content: "" },
             defaultValues: {},
           },
         } as DraggableComponent;
       }
-  
-      case 'error': {
+
+      case "error": {
         return {
           ...baseComponent,
           data: {
             id: draggedComponent.id,
-            type: 'error',
+            type: "error",
             name: `New Error`,
-            category: 'BasicComponents',
+            category: "BasicComponents",
             parameters: [],
             defaultValues: {},
           },
         } as DraggableComponent;
       }
-  
-      case 'struct': {
+
+      case "struct": {
         return {
           ...baseComponent,
           data: {
             id: draggedComponent.id,
-            type: 'struct',
+            type: "struct",
             name: `New Struct`,
-            category: 'DataStructures',
+            category: "DataStructures",
             members: [],
             defaultValues: {},
           },
         } as DraggableComponent;
       }
-  
-      case 'enum': {
+
+      case "enum": {
         return {
           ...baseComponent,
           data: {
             id: draggedComponent.id,
-            type: 'enum',
+            type: "enum",
             name: `New Enum`,
-            category: 'DataStructures',
+            category: "DataStructures",
             members: [],
             defaultValues: {},
           },
         } as DraggableComponent;
       }
-  
-      case 'mapping': {
+
+      case "mapping": {
         return {
           ...baseComponent,
           data: {
             id: draggedComponent.id,
-            type: 'mapping',
+            type: "mapping",
             name: `New Mapping`,
-            category: 'DataStructures',
-            keyType: 'uint256', 
-            valueType: 'uint256', 
-            visibility: 'public',
+            category: "DataStructures",
+            keyType: "uint256",
+            valueType: "uint256",
+            visibility: "public",
             defaultValues: {},
           },
         } as DraggableComponent;
       }
-  
-      case 'array': {
+
+      case "array": {
         return {
           ...baseComponent,
           data: {
             id: draggedComponent.id,
-            type: 'array',
+            type: "array",
             name: `New Array`,
-            category: 'DataStructures',
-            dataType: 'uint256', 
-            length: undefined, 
-            visibility: 'public',
+            category: "DataStructures",
+            dataType: "uint256",
+            length: undefined,
+            visibility: "public",
             defaultValues: {},
           },
         } as DraggableComponent;
       }
-  
-      case 'integration': {
+
+      case "integration": {
         return {
           ...baseComponent,
           data: {
             id: draggedComponent.id,
-            type: 'integration',
+            type: "integration",
             name: `New Integration`,
-            category: 'OracleIntegrations',
-            standard: 'Custom',
+            category: "OracleIntegrations",
+            standard: "Custom",
             features: [],
             defaultValues: {},
           },
         } as DraggableComponent;
       }
-  
-      case 'security': {
+
+      case "security": {
         return {
           ...baseComponent,
           data: {
             id: draggedComponent.id,
-            type: 'security',
+            type: "security",
             name: `New Security Feature`,
-            category: 'BasicComponents',
-            featureType: 'ownable',
-            implementation: '',
+            category: "BasicComponents",
+            featureType: "ownable",
+            implementation: "",
             requirements: [],
             defaultValues: {},
           },
         } as DraggableComponent;
       }
-  
-      case 'oracle': {
+
+      case "oracle": {
         return {
           ...baseComponent,
           data: {
             id: draggedComponent.id,
-            type: 'oracle',
+            type: "oracle",
             name: `New Oracle Integration`,
-            category: 'OracleIntegrations',
-            provider: 'chainlink',
-            endpoint: '',
+            category: "OracleIntegrations",
+            provider: "chainlink",
+            endpoint: "",
             parameters: [],
             defaultValues: {},
           },
         } as DraggableComponent;
       }
-  
-      case 'externalCall': {
+
+      case "externalCall": {
         return {
           ...baseComponent,
           data: {
             id: draggedComponent.id,
-            type: 'externalCall',
+            type: "externalCall",
             name: `New External Call`,
-            category: 'OracleIntegrations',
-            target: '',
-            method: '',
+            category: "OracleIntegrations",
+            target: "",
+            method: "",
             parameters: [],
             safetyChecks: [],
             defaultValues: {},
           },
         } as DraggableComponent;
       }
-  
+
       default:
         throw new Error(`Unsupported component type: ${draggedComponent.type}`);
     }
   };
-  
+
   if (!currentContract) {
     return (
       <div className="h-screen flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-semibold text-gray-700">No Contract Selected</h2>
-          <p className="mt-2 text-gray-500">Please select or create a contract to start editing</p>
+          <h2 className="text-2xl font-semibold text-gray-700">
+            No Contract Selected
+          </h2>
+          <p className="mt-2 text-gray-500">
+            Please select or create a contract to start editing
+          </p>
         </div>
       </div>
     );
@@ -722,7 +742,7 @@ const EditContract: React.FC = () => {
         onDragMove={handleDragMove}
         onDragEnd={handleDragEnd}
         onDragOver={(event) => {
-          console.log('🔍 Drag Over:', event.over);
+          console.log("🔍 Drag Over:", event.over);
         }}
         autoScroll={true}
       >
@@ -749,36 +769,35 @@ const EditContract: React.FC = () => {
               onConnectionEnd={handleConnectionEnd}
               expandedComponentId={expandedComponentId}
               onExpand={setExpandedComponentId}
-             
             />
           </div>
           <DetailPanel
             isOpen={!!selectedComponentId}
-            component={selectedComponentId ? components[selectedComponentId] : null}
+            component={
+              selectedComponentId ? components[selectedComponentId] : null
+            }
             onClose={() => setSelectedComponentId(null)}
             onUpdate={updateComponent}
             onDelete={handleDelete}
           />
         </div>
-        
+
         <DragOverlay>
           {draggedComponent && (
             <ComponentInstance
               component={createDraggableComponentFromDragData(
                 draggedComponent,
-                { x: 0, y: 0 } 
+                { x: 0, y: 0 }
               )}
               isSelected={false}
               isConnecting={false}
               isConnectionStart={false}
-              onClick={() => {}}  
+              onClick={() => {}}
               expandedComponentId={expandedComponentId}
               onExpand={setExpandedComponentId}
-
             />
           )}
         </DragOverlay>
-
       </DndContext>
     </UndoRedoProvider>
   );
