@@ -1,6 +1,6 @@
 // src/utils/constants.ts
 import { Platform, Chain, NetworkConfig } from '@/types/projectTypes';
-import { taiko } from 'viem/chains';
+
 
 // Chain Icons
 export const CHAIN_ICONS = {
@@ -12,6 +12,8 @@ export const CHAIN_ICONS = {
   taikomainnet: '/icons/chains/taiko-mainnet.webp',
   taikohekla: '/icons/chains/taiko-hekla.png',
   ethereumholesky: '/icons/chains/holesky-logo.png',
+  sonic: '/icons/chains/sonic.png',
+  sonicblaze: '/icons/chains/sonic.png',
   default: '/icons/chains/defaultchain.png'
 } as const;
 
@@ -76,6 +78,62 @@ export const CHAINS: Record<string, Chain> = {
       }
     },
     faucets: ['https://sepoliafaucet.com/']
+  },
+  SONIC: {
+    id: '146',
+    key: 'SONIC',
+    name: 'Sonic',
+    icon: CHAIN_ICONS.sonic,
+    platform: 'EVM',
+    testnet: false,
+    nativeCurrency: {
+      name: 'S',
+      symbol: 'S',
+      decimals: 18
+    },
+    rpcUrls: [
+      'https://rpc.soniclabs.com'
+    ] as const,
+    blockExplorers: {
+      default: {
+        name: 'Sonicscan',
+        url: 'https://sonicscan.org'
+      }
+    },
+    contracts: {
+      multicall3: {
+        address: '0xca11bde05977b3631167028862be2a173976ca11',
+        blockCreated: 751532
+      }
+    }
+  },
+  SONIC_BLAZE: {
+    id: '57054',
+    key: 'SONIC_BLAZE',
+    name: 'Sonic Blaze Testnet',
+    icon: CHAIN_ICONS.sonic,
+    platform: 'EVM',
+    testnet: true,
+    nativeCurrency: {
+      name: 'S',
+      symbol: 'S',
+      decimals: 18
+    },
+    rpcUrls: [
+      'https://rpc.ankr.com/sonic_blaze_testnet'
+    ] as const,
+    blockExplorers: {
+      default: {
+        name: 'Sonicscan',
+        url: 'https://blaze.soniclabs.com'
+      }
+    },
+    contracts: {
+      multicall3: {
+        address: '0xca11bde05977b3631167028862be2a173976ca11',
+        blockCreated: 751532
+      }
+    }
   },
   ARBITRUM_ONE: {
     id: '41923',
