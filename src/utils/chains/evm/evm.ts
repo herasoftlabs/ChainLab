@@ -51,6 +51,19 @@ export const CHAIN_METADATA: Record<string, ChainMetadata> = {
       default: { url: 'https://sepolia.etherscan.io' },
     },
   },
+  '146': {
+    name: 'Sonic',
+    icon: '/icons/chains/sonic.png',
+    nativeCurrency: {
+      name: 'Sonic',
+      symbol: 'S',
+      decimals: 18,
+    },
+    rpcUrls: ['https://rpc.soniclabs.com'],
+    blockExplorers: {
+      default: { url: 'https://sonicscan.org' },
+    },
+  },
 };
 
 // Wagmi config
